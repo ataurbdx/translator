@@ -1,7 +1,20 @@
 {
     "name": "ataurbdx/translator-engine",
-    "description": "The Master Universal Translation & Cultural Localization Monorepo for Laravel, JavaScript, and Flutter.",
-    "type": "project",
+    "description": "The Master Universal Translation & Localization Engine for Laravel, Flutter, and JavaScript.",
+    "keywords": [
+        "laravel",
+        "translation",
+        "localization",
+        "i18n",
+        "flutter",
+        "mern",
+        "polymorphic-translation",
+        "bengali-translation",
+        "number-to-words",
+        "ai-translation",
+        "ataurbdx"
+    ],
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -9,5 +22,33 @@
             "email": "ataurbdx@gmail.com",
             "role": "Lead Architect"
         }
-    ]
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3|^8.4",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/database": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/cache": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/http": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/console": "^9.0|^10.0|^11.0|^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ataurbdx\\TranslatorEngine\\": "packages/laravel/src/"
+        },
+        "files": [
+            "packages/laravel/src/Helpers/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ataurbdx\\TranslatorEngine\\TranslationServiceProvider"
+            ],
+            "aliases": {
+                "TranslatorEngine": "Ataurbdx\\TranslatorEngine\\Facades\\TranslatorEngine"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
