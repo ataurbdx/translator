@@ -1,0 +1,29 @@
+{
+  "name": "@ataurbdx/translator-engine",
+  "version": "1.0.0",
+  "description": "Universal Translation & Cultural Localization Client for React, Next.js, and MERN applications, powered by TranslatorEngine backend.",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "translation",
+    "i18n",
+    "react",
+    "nextjs",
+    "mern",
+    "bengali",
+    "translator-engine"
+  ],
+  "author": "Ataur Rahman <ataurbdx@gmail.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+    "name": "ataurbdx/translator-engine",
+    "description": "The Master Universal Translation & Cultural Localization Monorepo for Laravel, JavaScript, and Flutter.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ataur Rahman",
+            "email": "ataurbdx@gmail.com",
+            "role": "Lead Architect"
+        }
+    ]
+}
