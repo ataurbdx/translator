@@ -7,6 +7,7 @@ use Ataurbdx\TranslatorEngine\Console\MakeExternalCommand;
 use Ataurbdx\TranslatorEngine\Console\MakeHybridCommand;
 use Ataurbdx\TranslatorEngine\Console\MakeInlineCommand;
 use Ataurbdx\TranslatorEngine\Console\AiSyncCommand;
+use Ataurbdx\TranslatorEngine\Console\ExportLocalesCommand;
 use Ataurbdx\TranslatorEngine\Core\TranslatorEngine;
 use Ataurbdx\TranslatorEngine\Modules\HeadlessApi\Middleware\TranslatorEngineLocaleMiddleware;
 use Illuminate\Routing\Router;
@@ -57,6 +58,7 @@ class TranslationServiceProvider extends ServiceProvider
                 MakeHybridCommand::class,
                 MakeInlineCommand::class,
                 AiSyncCommand::class,
+                ExportLocalesCommand::class,
             ]);
         }
 
