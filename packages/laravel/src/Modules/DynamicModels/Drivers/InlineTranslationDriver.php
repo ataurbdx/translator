@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers;
+namespace Ataurbdx\Translator\Modules\DynamicModels\Drivers;
 
-use Ataurbdx\TranslatorEngine\Core\Contracts\TranslationDriverInterface;
+use Ataurbdx\Translator\Core\Contracts\TranslationDriverInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class InlineTranslationDriver implements TranslationDriverInterface
@@ -38,7 +38,7 @@ class InlineTranslationDriver implements TranslationDriverInterface
             if (!empty($values[$locale])) {
                 return $values[$locale];
             }
-            $fallbackLocale = config('translator_engine.fallback_locale', 'en');
+            $fallbackLocale = config('translator.fallback_locale', 'en');
             if (!empty($values[$fallbackLocale])) {
                 return $values[$fallbackLocale];
             }

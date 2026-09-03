@@ -1,18 +1,18 @@
 import { useState, useEffect, useContext, createContext } from 'react';
-import { TranslatorEngineClient } from './index';
+import { TranslatorClient } from './index';
 
-const TranslatorEngineContext = createContext<TranslatorEngineClient | null>(null);
+const TranslatorContext = createContext<TranslatorClient | null>(null);
 
-export const TranslatorEngineProvider = TranslatorEngineContext.Provider;
+export const TranslatorProvider = TranslatorContext.Provider;
 
 /**
- * React hook for consuming TranslatorEngine in Next.js / React / MERN apps
+ * React hook for consuming Translator in Next.js / React / MERN apps
  */
-export function useTranslatorEngine() {
-    const client = useContext(TranslatorEngineContext);
+export function useTranslator() {
+    const client = useContext(TranslatorContext);
 
     if (!client) {
-        throw new Error('useTranslatorEngine must be used within a TranslatorEngineProvider');
+        throw new Error('useTranslator must be used within a TranslatorProvider');
     }
 
     const [loaded, setLoaded] = useState(false);

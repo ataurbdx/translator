@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\StaticUI\Drivers;
+namespace Ataurbdx\Translator\Modules\StaticUI\Drivers;
 
-use Ataurbdx\TranslatorEngine\Modules\StaticUI\Models\TranslatorEngineStatic;
+use Ataurbdx\Translator\Modules\StaticUI\Models\TranslatorStatic;
 use Illuminate\Support\Facades\File;
 
 class JsonTranslationDriver
@@ -37,7 +37,7 @@ class JsonTranslationDriver
             File::makeDirectory($dir, 0755, true);
         }
 
-        $records = TranslatorEngineStatic::all();
+        $records = TranslatorStatic::all();
         $output = [];
 
         foreach ($records as $record) {
@@ -66,7 +66,7 @@ class JsonTranslationDriver
 
         $count = 0;
         foreach ($data as $key => $val) {
-            $record = TranslatorEngineStatic::firstOrNew(['key' => $key]);
+            $record = TranslatorStatic::firstOrNew(['key' => $key]);
             if (!$record->exists) {
                 $record->name = $key;
                 $record->group = $group;

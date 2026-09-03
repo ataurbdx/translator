@@ -1,0 +1,66 @@
+TRANSLATOR — CORE COMMANDS
+===================================
+
+0. DOWNLOAD & INSTALL THE PACKAGE (run in your Laravel project)
+   composer require ataurbdx/translator
+
+1. SETUP (run once after composer require)
+   php artisan translator:install
+
+2. VERIFY INSTALLATION
+   composer show ataurbdx/translator
+   php artisan migrate:status
+
+3. PUBLISH NEW VERSION TO GITHUB
+   git add .
+   git commit -m "your message"
+   git tag v1.0.1
+   git push origin main
+   git push origin v1.0.1
+
+4. INSTALL IN A LARAVEL PROJECT
+   composer require ataurbdx/translator
+   php artisan translator:install
+
+5. UPGRADE PACKAGE
+   composer update ataurbdx/translator
+   php artisan migrate
+
+6. PUBLISH CONFIG ONLY
+   php artisan vendor:publish --provider="Ataurbdx\Translator\TranslationServiceProvider" --tag="config"
+
+7. GENERATE EXTERNAL TABLE (for high-traffic model)
+   php artisan translator:make:external listings
+   php artisan migrate
+
+8. GENERATE HYBRID TABLE (for domain cluster)
+   php artisan translator:make:hybrid worlds
+   php artisan migrate
+
+9. EXPORT LOCALE RULES TO FILE (fallback for local type)
+   php artisan translator:export-locales
+   php artisan translator:export-locales --locale=bn
+   php artisan translator:export-locales --force
+
+10. AI AUTO-TRANSLATE MISSING KEYS
+    php artisan translator:ai-sync --from=en --to=bn
+
+11. UNINSTALL
+    composer remove ataurbdx/translator
+
+12. CLEAR & REBUILD CONFIG CACHE
+    php artisan config:clear
+    php artisan config:cache
+
+===================================
+TABLES CREATED ON INSTALL:
+  translator_languages
+  translator_settings
+  translator_dynamics
+  translator_statics
+  translator_locales
+
+ON DEMAND (generated per project):
+  translator_{model}   (external type)
+  translator_{domain}  (hybrid type)
+===================================

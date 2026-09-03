@@ -1,6 +1,6 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Console;
+namespace Ataurbdx\Translator\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Schema;
 
 class MakeExternalCommand extends Command
 {
-    protected $signature = 'translator-engine:make:external {table : Base table name (e.g. listings)}';
+    protected $signature = 'translator:make:external {table : Base table name (e.g. listings)}';
 
     protected $description = 'Generate a dedicated translation table migration for a high-traffic model';
 
     public function handle(): int
     {
         $baseTable = trim($this->argument('table'));
-        $prefix = config('translator_engine.tables.prefix', 'translator_engine_');
+        $prefix = config('translator.tables.prefix', 'translator_');
         $targetTable = $prefix . $baseTable;
 
         $this->info("Creating dedicated translation migration for: {$baseTable} -> {$targetTable}");

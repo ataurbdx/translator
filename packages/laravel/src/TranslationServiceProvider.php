@@ -1,15 +1,15 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine;
+namespace Ataurbdx\Translator;
 
-use Ataurbdx\TranslatorEngine\Console\InstallCommand;
-use Ataurbdx\TranslatorEngine\Console\MakeExternalCommand;
-use Ataurbdx\TranslatorEngine\Console\MakeHybridCommand;
-use Ataurbdx\TranslatorEngine\Console\MakeInlineCommand;
-use Ataurbdx\TranslatorEngine\Console\AiSyncCommand;
-use Ataurbdx\TranslatorEngine\Console\ExportLocalesCommand;
-use Ataurbdx\TranslatorEngine\Core\TranslatorEngine;
-use Ataurbdx\TranslatorEngine\Modules\HeadlessApi\Middleware\TranslatorEngineLocaleMiddleware;
+use Ataurbdx\Translator\Console\InstallCommand;
+use Ataurbdx\Translator\Console\MakeExternalCommand;
+use Ataurbdx\Translator\Console\MakeHybridCommand;
+use Ataurbdx\Translator\Console\MakeInlineCommand;
+use Ataurbdx\Translator\Console\AiSyncCommand;
+use Ataurbdx\Translator\Console\ExportLocalesCommand;
+use Ataurbdx\Translator\Core\Translator;
+use Ataurbdx\Translator\Modules\HeadlessApi\Middleware\TranslatorLocaleMiddleware;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,13 +22,13 @@ class TranslationServiceProvider extends ServiceProvider
     {
         // Merge package configuration
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/translator_engine.php',
-            'translator_engine'
+            __DIR__ . '/../config/translator.php',
+            'translator'
         );
 
         // Bind main singleton
-        $this->app->singleton('translator-engine', function ($app) {
-            return new TranslatorEngine();
+        $this->app->singleton('translator', function ($app) {
+            return new Translator();
         });
     }
 
@@ -40,7 +40,7 @@ class TranslationServiceProvider extends ServiceProvider
         // 1. Register Publishable Assets
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/translator_engine.php' => config_path('translator_engine.php'),
+                __DIR__ . '/../config/translator.php' => config_path('translator.php'),
             ], 'config');
 
             $this->publishes([
@@ -70,14 +70,14 @@ class TranslationServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/Modules/CulturalLocale/Migrations');
 
         // 3. Register Headless API Routes if enabled
-        if (config('translator_engine.api.enabled', true)) {
+        if (config('translator.api.enabled', true)) {
             $this->loadRoutesFrom(__DIR__ . '/Modules/HeadlessApi/Routes/api.php');
         }
 
         // 4. Register Global Locale Middleware
         /** @var Router $router */
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', TranslatorEngineLocaleMiddleware::class);
-        $router->pushMiddlewareToGroup('api', TranslatorEngineLocaleMiddleware::class);
+        $router->pushMiddlewareToGroup('web', TranslatorLocaleMiddleware::class);
+        $router->pushMiddlewareToGroup('api', TranslatorLocaleMiddleware::class);
     }
 }

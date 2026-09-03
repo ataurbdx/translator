@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers;
+namespace Ataurbdx\Translator\Modules\DynamicModels\Drivers;
 
-use Ataurbdx\TranslatorEngine\Core\Contracts\TranslationDriverInterface;
+use Ataurbdx\Translator\Core\Contracts\TranslationDriverInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -18,7 +18,7 @@ class HybridTranslationDriver implements TranslationDriverInterface
 
     protected function getTableName(Model $model): string
     {
-        return $model->translatorEngineTable ?? config('translator_engine.tables.prefix', 'translator_engine_') . 'worlds';
+        return $model->translatorTable ?? config('translator.tables.prefix', 'translator_') . 'worlds';
     }
 
     protected function getEntityType(Model $model): string
@@ -41,8 +41,8 @@ class HybridTranslationDriver implements TranslationDriverInterface
         $entityType = $this->getEntityType($model);
         $id = $model->getKey();
 
-        $cacheKey = "translator_engine_hybrid_{$table}_{$entityType}_{$id}_{$locale}_{$field}";
-        $ttl = config('translator_engine.cache.ttl', 86400);
+        $cacheKey = "translator_hybrid_{$table}_{$entityType}_{$id}_{$locale}_{$field}";
+        $ttl = config('translator.cache.ttl', 86400);
 
         return Cache::remember($cacheKey, $ttl, function () use ($table, $entityType, $id, $locale, $field, $fallback) {
             // First look for specific field column if exists
@@ -58,7 +58,7 @@ class HybridTranslationDriver implements TranslationDriverInterface
             }
 
             // Fallback locale check
-            $fallbackLocale = config('translator_engine.fallback_locale', 'en');
+            $fallbackLocale = config('translator.fallback_locale', 'en');
             if ($locale !== $fallbackLocale) {
                 $fbRow = DB::table($table)
                     ->where('entity_type', $entityType)
@@ -123,7 +123,7 @@ class HybridTranslationDriver implements TranslationDriverInterface
             ]);
         }
 
-        Cache::forget("translator_engine_hybrid_{$table}_{$entityType}_{$id}_{$locale}_{$field}");
+        Cache::forget("translator_hybrid_{$table}_{$entityType}_{$id}_{$locale}_{$field}");
     }
 
     public function delete(mixed $target, ?string $field = null): bool
@@ -144,6 +144,6 @@ class HybridTranslationDriver implements TranslationDriverInterface
             $query->where('field', $field);
         }
 
-        return (bool) $query->delete();
+        return (bool) DB::table($table)->delete();
     }
 }

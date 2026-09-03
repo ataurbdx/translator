@@ -1,10 +1,10 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\CulturalLocale\Models;
+namespace Ataurbdx\Translator\Modules\CulturalLocale\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TranslatorEngineLocale extends Model
+class TranslatorLocale extends Model
 {
     protected $guarded = ['id'];
 
@@ -19,6 +19,6 @@ class TranslatorEngineLocale extends Model
 
     public function getTable()
     {
-        return config('translator_engine.tables.locales', 'translator_engine_locales');
+        return config('translator.tables.locales', 'translator_locales');
     }
 }

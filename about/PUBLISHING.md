@@ -1,311 +1,292 @@
-# TranslatorEngine — Publishing, Tagging & Installation Guide
+# Translator — Publishing, Packagist Webhook & Tagging Guide
+
+A complete, step-by-step handbook on how to publish the `ataurbdx/translator` package to Packagist, configure GitHub Webhooks with your API Token for automatic instant syncing, release new version tags, and install it in any Laravel application.
 
 ---
 
 ## Table of Contents
 
-1. [How It Works](#how-it-works)
-2. [Release a New Version (Git Tag)](#release-a-new-version-git-tag)
-3. [Install in a Laravel Project](#install-in-a-laravel-project)
-4. [All Available Artisan Commands](#all-available-artisan-commands)
-5. [Upgrade the Package](#upgrade-the-package)
-6. [Uninstall the Package](#uninstall-the-package)
-7. [Quick Reference Cheatsheet](#quick-reference-cheatsheet)
+1. [How Package Distribution Works](#1-how-package-distribution-works)
+2. [Phase 1 — Initial Setup: Packagist & GitHub Webhook](#2-phase-1--initial-setup-packagist--github-webhook-one-time)
+   - [Step 1: Create a Packagist Account](#step-1-create-a-packagist-account)
+   - [Step 2: Obtain your Packagist API Token](#step-2-obtain-your-packagist-api-token)
+   - [Step 3: Submit the Repository to Packagist](#step-3-submit-the-repository-to-packagist)
+   - [Step 4: Configure GitHub Webhook for Auto-Sync](#step-4-configure-github-webhook-for-auto-sync)
+   - [Step 5: Verify Webhook Connection](#step-5-verify-webhook-connection)
+3. [Phase 2 — Releasing a New Version (Git Tagging)](#3-phase-2--releasing-a-new-version-git-tagging)
+   - [Semantic Versioning Rules](#semantic-versioning-rules)
+   - [Tagging & Pushing Workflow](#tagging--pushing-workflow)
+4. [Phase 3 — Installing & Using in a Laravel Project](#4-phase-3--installing--using-in-a-laravel-project)
+5. [Upgrading the Package](#5-upgrading-the-package)
+6. [Uninstalling the Package](#6-uninstalling-the-package)
+7. [Quick Reference Cheatsheet](#7-quick-reference-cheatsheet)
 
 ---
 
-## How It Works
+## 1. How Package Distribution Works
 
 ```
-Your Code  →  Git Push  →  GitHub  →  Packagist (auto-indexed via webhook)
-                                              ↓
-                                   composer require ataurbdx/translator-engine
+Your Local Code  ──(git push)──>  GitHub Repository  ──(Webhook Ping)──>  Packagist.org
+                                                                                │
+                                                                           (auto-indexed)
+                                                                                │
+                                                                                ▼
+User Terminal:  composer require ataurbdx/translator  <─────────────────────────┘
 ```
 
-- The package is hosted on GitHub: https://github.com/ataurbdx/translator-engine
-- It is indexed on Packagist: https://packagist.org/packages/ataurbdx/translator-engine
-- GitHub and Packagist are connected via a **webhook** — every `git push` auto-updates Packagist.
-- Composer reads from Packagist by default, so users just run `composer require ataurbdx/translator-engine`.
+* **GitHub Repository**: Stores your source code, branches, and release tags (`https://github.com/ataurbdx/translator.git`).
+* **Packagist.org**: The official PHP package repository where Composer looks up packages.
+* **GitHub Webhook**: A webhook trigger that alerts Packagist the instant you push a new commit or version tag, automatically indexing the release in seconds without manual intervention.
 
 ---
 
-## Release a New Version (Git Tag)
+## 2. Phase 1 — Initial Setup: Packagist & GitHub Webhook (One-Time)
 
-Every release **must have a Git tag**. Composer uses tags as version numbers.
-Without a tag, Composer cannot find a stable version to install.
+Follow these 5 steps to register and link your package with GitHub and Packagist.
 
-### Step 1 — Make your changes and commit
+### Step 1: Create a Packagist Account
+1. Visit [https://packagist.org](https://packagist.org/).
+2. Click **Log in** or **Register** (we recommend clicking **"Log in with GitHub"** for instant authentication).
+3. Note your **Packagist Username** (e.g., `ataurbdx`).
 
+---
+
+### Step 2: Obtain your Packagist API Token
+Packagist uses an API Token as the secret key in your GitHub webhook to verify that incoming pings come from you.
+
+1. In Packagist, click on your username at the top-right corner to open your **Profile**.
+2. Click **"Show API Token"** (or find the **API Token** section).
+3. Copy the token string (e.g. `a1b2c3d4e5f6...`). Keep this handy for Step 4.
+
+---
+
+### Step 3: Submit the Repository to Packagist
+1. In the top navigation bar of Packagist, click **Submit** (or visit [https://packagist.org/packages/submit](https://packagist.org/packages/submit)).
+2. In the **Repository URL** field, enter:
+   ```text
+   https://github.com/ataurbdx/translator.git
+   ```
+3. Click **Check**. Packagist will inspect your `composer.json` file.
+4. Once verified, click **Submit**.
+5. Your package will now be live at:
+   ```text
+   https://packagist.org/packages/ataurbdx/translator
+   ```
+   *(Note: You may see a notice warning that auto-update is not configured yet. That is what Step 4 resolves!)*
+
+---
+
+### Step 4: Configure GitHub Webhook for Auto-Sync
+This connects your GitHub repository directly to Packagist so every `git push` or tag release updates Packagist immediately.
+
+1. Open your GitHub repository in your browser:
+   [https://github.com/ataurbdx/translator](https://github.com/ataurbdx/translator)
+2. Go to **Settings** (tab at the top of the repo).
+3. In the left sidebar, click **Webhooks**.
+4. Click the **Add webhook** button on the top-right.
+5. Fill in the webhook form as follows:
+
+| Field | Value / Setting |
+|---|---|
+| **Payload URL** | `https://packagist.org/api/github?username=YOUR_PACKAGIST_USERNAME`<br>*(Example: `https://packagist.org/api/github?username=ataurbdx`)* |
+| **Content type** | Select `application/json` |
+| **Secret** | Paste your **Packagist API Token** (copied in Step 2) |
+| **SSL verification** | Select **Enable SSL verification** |
+| **Which events to trigger** | Select **"Just the push event"** |
+| **Active** | Ensure the **Active** checkbox is **Checked** ✅ |
+
+6. Click the green **Add webhook** button.
+
+---
+
+### Step 5: Verify Webhook Connection
+1. After adding the webhook, GitHub will immediately send a test ping to Packagist.
+2. Refresh the **Webhooks** list on GitHub.
+3. You should see a green checkmark icon (`✔`) next to `https://packagist.org/api/github?username=...`.
+4. If you click on the webhook and inspect **"Recent Deliveries"**, you will see a `200 OK` response from Packagist.
+5. Visit your package page on Packagist ([https://packagist.org/packages/ataurbdx/translator](https://packagist.org/packages/ataurbdx/translator)) and notice the warning notice is gone. Auto-sync is now active!
+
+---
+
+## 3. Phase 2 — Releasing a New Version (Git Tagging)
+
+Whenever you make improvements, bug fixes, or add features, release a new version using Git tags. Composer uses Git tags as package versions.
+
+### Semantic Versioning Rules
+Follow the [Semantic Versioning (SemVer)](https://semver.org/) format: `vMAJOR.MINOR.PATCH`
+
+| Release Type | Tag Example | When to use |
+|---|---|---|
+| **Patch / Fix** | `v1.0.1` | Bug fixes, typos, internal optimizations (nothing breaks) |
+| **Minor / Feature** | `v1.1.0` | New translation driver, new command, backward-compatible |
+| **Major / Breaking** | `v2.0.0` | Major overhaul, breaking schema changes |
+
+---
+
+### Tagging & Pushing Workflow
+
+#### Step 1: Stage and commit your changes
 ```bash
 git add .
-git commit -m "feat: your change description"
+git commit -m "feat: simplified translator engine to translator"
 ```
 
-### Step 2 — Create a version tag
-
-Follow [Semantic Versioning](https://semver.org/): `vMAJOR.MINOR.PATCH`
-
-| Change Type | Example | When to use |
-|-------------|---------|-------------|
-| Bug fix | `v1.0.1` | Small fixes, nothing breaks |
-| New feature | `v1.1.0` | New feature added, backward compatible |
-| Breaking change | `v2.0.0` | Existing API changed, not backward compatible |
-
+#### Step 2: Push your branch to GitHub
 ```bash
-# Create the tag
-git tag v1.0.1
-
-# Or with a message (recommended)
-git tag -a v1.0.1 -m "Fix: corrected digit translation fallback"
+git push origin main
 ```
 
-### Step 3 — Push the tag to GitHub
-
+#### Step 3: Create a version tag
 ```bash
-# Push the tag
-git push origin v1.0.1
+# Lightweight tag:
+git tag v1.0.0
 
-# Push all tags at once (if you have multiple)
+# Or annotated tag with a descriptive release message (recommended):
+git tag -a v1.0.0 -m "Release v1.0.0: Master universal translator for Laravel, Flutter, and React"
+```
+
+#### Step 4: Push the tag to GitHub
+```bash
+# Push a specific tag:
+git push origin v1.0.0
+
+# Or push all local tags at once:
 git push origin --tags
 ```
 
-### Step 4 — Packagist auto-updates (via webhook)
+#### Step 5: Automatic indexing
+* Because your GitHub Webhook is active, Packagist receives the tag event immediately.
+* Within **10–30 seconds**, `v1.0.0` is published and available worldwide on Packagist!
+* You can check the live release at [https://packagist.org/packages/ataurbdx/translator](https://packagist.org/packages/ataurbdx/translator).
 
-After `git push`, the GitHub webhook notifies Packagist automatically.
-Wait 10–30 seconds, then the new version will be available on Packagist.
-
-You can verify at: https://packagist.org/packages/ataurbdx/translator-engine
-
-### Step 5 — Force manual update (if webhook fails)
-
-Go to https://packagist.org/packages/ataurbdx/translator-engine and click the green **"Update"** button.
+> **Manual Update Fallback**: If GitHub's webhook ever experiences delays, you can always visit your Packagist page and click the green **"Update"** button to force an instant refresh.
 
 ---
 
-## Install in a Laravel Project
+## 4. Phase 3 — Installing & Using in a Laravel Project
 
-### Minimum requirement
+Once published on Packagist, any Laravel developer in the world can install and use your package with standard Composer commands:
 
-- PHP `^8.1`
-- Laravel `^9.0 | ^10.0 | ^11.0 | ^12.0`
-
-### Step 1 — Require the package
-
+### Step 1: Require via Composer
 ```bash
-composer require ataurbdx/translator-engine
+composer require ataurbdx/translator
 ```
+Laravel's package auto-discovery will automatically register `Ataurbdx\Translator\TranslationServiceProvider` and the `Translator` facade.
 
-That's it. Laravel will auto-discover the service provider.
-
-### Step 2 — Run the installer
-
+### Step 2: Run the Installer
 ```bash
-php artisan translator-engine:install
+php artisan translator:install
 ```
+This single command:
+1. Publishes configuration to `config/translator.php`.
+2. Publishes and executes all core migrations:
+   - `translator_languages` (active languages, flags, defaults)
+   - `translator_settings` (AI keys, API settings, cache rules)
+   - `translator_dynamics` (polymorphic database translations)
+   - `translator_statics` (database UI labels, buttons, menus)
+   - `translator_locales` (cultural formatting rules: digits, calendar, money-to-words)
 
-This single command will:
-- ✅ Publish the config file to `config/translator_engine.php`
-- ✅ Run all migrations (creates required database tables)
-- ✅ Cache the config for performance
-
-### Done! Start using it:
+### Step 3: Start Translating in Code
 
 ```php
-// Translate text
-translate('welcome_message', 'bn');
+// In Blade templates or PHP controllers:
+translate('button.add_to_cart', 'bn');
 
-// Convert digits
-translate('2025', 'bn', 'digit');
+// Convert digits to Bengali (2026 -> ২০২৬):
+translate('2026', type: 'digits', locale: 'bn');
 
-// Convert month name
-translate('January', 'bn', 'month');
+// Format numbers with South Asian grouping (1250000 -> ১২,৫০,০০০):
+translate(1250000, type: 'number', locale: 'bn');
 
-// Get flag emoji
-translate('BD', 'bn', 'flag');
+// Financial number-to-words:
+translate(1500, type: 'words', currency: 'BDT', locale: 'bn');
+// Output: এক হাজার পাঁচশত টাকা মাত্র
+
+// In Eloquent models:
+use Ataurbdx\Translator\Core\Traits\HasTranslator;
+
+class Category extends Model
+{
+    use HasTranslator;
+
+    protected $translatorType = 'internal';
+    protected array $translatable = ['name', 'description'];
+}
+
+$category = Category::find(1);
+echo $category->name; // Auto-resolves based on active app locale!
 ```
 
 ---
 
-## All Available Artisan Commands
+## 5. Upgrading the Package
 
-### `translator-engine:install`
-
-The all-in-one setup command. Run once after installing the package.
+When you release a new version tag (e.g. `v1.0.1`), users upgrade by running:
 
 ```bash
-php artisan translator-engine:install
-```
-
-What it does:
-- Publishes `config/translator_engine.php`
-- Runs `StaticUI` migrations (creates `translator_statics` table)
-- Runs `CulturalLocale` migrations (creates `translator_engine_locales` table)
-- Caches config
-
----
-
-### `vendor:publish` — Publish only the config
-
-If you want to re-publish the config file only:
-
-```bash
-php artisan vendor:publish --provider="Ataurbdx\TranslatorEngine\TranslatorEngineServiceProvider" --tag="config"
-```
-
----
-
-### `vendor:publish` — Publish only the migrations
-
-If you want to copy the migrations into your app's `database/migrations/` folder:
-
-```bash
-php artisan vendor:publish --provider="Ataurbdx\TranslatorEngine\TranslatorEngineServiceProvider" --tag="migrations"
-```
-
----
-
-### `migrate` — Run the migrations manually
-
-If you prefer running migrations manually instead of using the installer:
-
-```bash
-php artisan migrate --path=vendor/ataurbdx/translator-engine/packages/laravel/src/Modules/StaticUI/Migrations
-
-php artisan migrate --path=vendor/ataurbdx/translator-engine/packages/laravel/src/Modules/CulturalLocale/Migrations
-```
-
----
-
-### `config:cache` — Cache config after changes
-
-After editing `config/translator_engine.php`, refresh the config cache:
-
-```bash
-php artisan config:cache
-```
-
-To clear the cache without rebuilding:
-
-```bash
-php artisan config:clear
-```
-
----
-
-### `migrate:rollback` — Undo the migrations
-
-If you need to roll back the package's migrations:
-
-```bash
-php artisan migrate:rollback --path=vendor/ataurbdx/translator-engine/packages/laravel/src/Modules/StaticUI/Migrations
-
-php artisan migrate:rollback --path=vendor/ataurbdx/translator-engine/packages/laravel/src/Modules/CulturalLocale/Migrations
-```
-
----
-
-## Upgrade the Package
-
-When a new version is released:
-
-```bash
-composer update ataurbdx/translator-engine
-```
-
-If the new version has new migrations, run them:
-
-```bash
+composer update ataurbdx/translator
 php artisan migrate
 ```
 
 ---
 
-## Uninstall the Package
+## 6. Uninstalling the Package
 
-### Step 1 — Roll back migrations (optional but recommended)
-
-```bash
-php artisan migrate:rollback --path=vendor/ataurbdx/translator-engine/packages/laravel/src/Modules/StaticUI/Migrations
-
-php artisan migrate:rollback --path=vendor/ataurbdx/translator-engine/packages/laravel/src/Modules/CulturalLocale/Migrations
-```
-
-### Step 2 — Remove the package
+If a user ever wants to remove the package:
 
 ```bash
-composer remove ataurbdx/translator-engine
-```
+# 1. Rollback migrations (optional)
+php artisan migrate:rollback --path=vendor/ataurbdx/translator/packages/laravel/src/Modules/StaticUI/Migrations
+php artisan migrate:rollback --path=vendor/ataurbdx/translator/packages/laravel/src/Modules/CulturalLocale/Migrations
 
-### Step 3 — Remove published files (optional)
+# 2. Remove package
+composer remove ataurbdx/translator
 
-```bash
-# Delete published config
-del config\translator_engine.php
+# 3. Delete published config
+del config\translator.php
 ```
 
 ---
 
-## Quick Reference Cheatsheet
+## 7. Quick Reference Cheatsheet
 
 ```bash
 # ──────────────────────────────────────────────
-# PUBLISHING A NEW VERSION
+# 1. COMMIT CHANGES
 # ──────────────────────────────────────────────
-
 git add .
-git commit -m "your commit message"
-git tag v1.0.1
-git push origin v1.0.1
+git commit -m "feat: your descriptive update"
 
 # ──────────────────────────────────────────────
-# INSTALLING IN A LARAVEL PROJECT
+# 2. PUSH CODE TO GITHUB
 # ──────────────────────────────────────────────
-
-composer require ataurbdx/translator-engine
-php artisan translator-engine:install
+git push origin main
 
 # ──────────────────────────────────────────────
-# UPGRADING
+# 3. TAG A NEW RELEASE
 # ──────────────────────────────────────────────
-
-composer update ataurbdx/translator-engine
-php artisan migrate
-
-# ──────────────────────────────────────────────
-# UNINSTALLING
-# ──────────────────────────────────────────────
-
-composer remove ataurbdx/translator-engine
+git tag v1.0.0
+git push origin v1.0.0
+# (Packagist auto-updates in 15 seconds via webhook!)
 
 # ──────────────────────────────────────────────
-# FORCE PACKAGIST TO REFRESH (if webhook fails)
+# 4. INSTALL IN ANY LARAVEL PROJECT
 # ──────────────────────────────────────────────
-
-# Go to: https://packagist.org/packages/ataurbdx/translator-engine
-# Click the green "Update" button
+composer require ataurbdx/translator
+php artisan translator:install
 
 # ──────────────────────────────────────────────
-# CLEAR & REBUILD CONFIG CACHE
+# 5. CLEAR & REBUILD CONFIG CACHE
 # ──────────────────────────────────────────────
-
 php artisan config:clear
 php artisan config:cache
 ```
-
----
-
-## Version History
-
-| Version | Tag | Description |
-|---------|-----|-------------|
-| 1.0.0 | `v1.0.0` | Initial stable release |
-
-> Add new rows here every time you release a new version.
 
 ---
 
 ## Links
 
-- **GitHub**: https://github.com/ataurbdx/translator-engine
-- **Packagist**: https://packagist.org/packages/ataurbdx/translator-engine
-- **Semantic Versioning**: https://semver.org
+- **GitHub Repository**: [https://github.com/ataurbdx/translator](https://github.com/ataurbdx/translator)
+- **Packagist Package**: [https://packagist.org/packages/ataurbdx/translator](https://packagist.org/packages/ataurbdx/translator)
+- **Packagist Submit**: [https://packagist.org/packages/submit](https://packagist.org/packages/submit)
+- **Semantic Versioning Specification**: [https://semver.org](https://semver.org)

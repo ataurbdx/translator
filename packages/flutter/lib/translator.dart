@@ -2,31 +2,31 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TranslatorEngine {
-  static TranslatorEngine? _instance;
+class Translator {
+  static Translator? _instance;
   final String baseUrl;
   String currentLocale;
   Map<String, String> _translations = {};
 
-  TranslatorEngine._internal({
+  Translator._internal({
     required this.baseUrl,
     required this.currentLocale,
   });
 
-  static TranslatorEngine init({
+  static Translator init({
     required String baseUrl,
     String defaultLocale = 'en',
   }) {
-    _instance ??= TranslatorEngine._internal(
+    _instance ??= Translator._internal(
       baseUrl: baseUrl.replaceAll(RegExp(r'/$'), ''),
       currentLocale: defaultLocale,
     );
     return _instance!;
   }
 
-  static TranslatorEngine get instance {
+  static Translator get instance {
     if (_instance == null) {
-      throw Exception('TranslatorEngine.init() must be called before using instance.');
+      throw Exception('Translator.init() must be called before using instance.');
     }
     return _instance!;
   }
@@ -36,7 +36,7 @@ class TranslatorEngine {
     if (locale != null) currentLocale = locale;
 
     final prefs = await SharedPreferences.getInstance();
-    final cacheKey = 'translator_engine_cache_$currentLocale';
+    final cacheKey = 'translator_cache_$currentLocale';
 
     // 1. Load from local cache first for instant UI render
     final cachedData = prefs.getString(cacheKey);
@@ -45,8 +45,8 @@ class TranslatorEngine {
       _translations = decoded.map((k, v) => MapEntry(k, v.toString()));
     }
 
-    // 2. Fetch fresh translations from Laravel TranslatorEngine API
-    final url = Uri.parse('$baseUrl/api/v1/translator-engine/static?locale=$currentLocale');
+    // 2. Fetch fresh translations from Laravel Translator API
+    final url = Uri.parse('$baseUrl/api/v1/translator/static?locale=$currentLocale');
     try {
       final res = await http.get(url, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {

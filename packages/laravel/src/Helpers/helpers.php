@@ -1,10 +1,10 @@
 <?php
 
-use Ataurbdx\TranslatorEngine\Facades\TranslatorEngine;
-use Ataurbdx\TranslatorEngine\Modules\Languages\Models\TranslatorEngineLanguage;
+use Ataurbdx\Translator\Facades\Translator;
+use Ataurbdx\Translator\Modules\Languages\Models\TranslatorLanguage;
 
 // =========================================================================
-// THE ONE MASTER FUNCTION: translate()
+// THE MASTER TRANSLATION FUNCTIONS: translate() and translator()
 // =========================================================================
 
 if (!function_exists('translate')) {
@@ -32,14 +32,27 @@ if (!function_exists('translate')) {
         $locale = $locale ?? app()->getLocale();
 
         return match ($type) {
-            'digits' => TranslatorEngine::local()->digits($value, $locale),
-            'number' => TranslatorEngine::local()->number($value, $decimals, $locale),
-            'date'   => TranslatorEngine::local()->date($value, $withTime, $locale),
-            'words'  => TranslatorEngine::local()->words($value, $currency, $locale),
-            'flag'   => ($lang = TranslatorEngineLanguage::where('code', $value ?? $locale)->first()) 
+            'digits' => Translator::local()->digits($value, $locale),
+            'number' => Translator::local()->number($value, $decimals, $locale),
+            'date'   => Translator::local()->date($value, $withTime, $locale),
+            'words'  => Translator::local()->words($value, $currency, $locale),
+            'flag'   => ($lang = TranslatorLanguage::where('code', $value ?? $locale)->first()) 
                             ? $lang->renderFlag($extraClasses) 
                             : '',
-            default  => TranslatorEngine::static()->get((string) $value, $locale, $default),
+            default  => Translator::static()->get((string) $value, $locale, $default),
         };
+    }
+}
+
+if (!function_exists('translator')) {
+    /**
+     * Fluent access to the Translator engine or quick translate helper
+     */
+    function translator(mixed $key = null, ?string $locale = null, mixed $default = null): mixed {
+        if ($key === null) {
+            return app('translator');
+        }
+
+        return translate($key, $locale, $default);
     }
 }

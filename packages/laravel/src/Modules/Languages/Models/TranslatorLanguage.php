@@ -1,12 +1,12 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\Languages\Models;
+namespace Ataurbdx\Translator\Modules\Languages\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 
-class TranslatorEngineLanguage extends Model
+class TranslatorLanguage extends Model
 {
     use SoftDeletes;
 
@@ -20,7 +20,7 @@ class TranslatorEngineLanguage extends Model
 
     public function getTable()
     {
-        return config('translator_engine.tables.languages', 'translator_engine_languages');
+        return config('translator.tables.languages', 'translator_languages');
     }
 
     /**
@@ -36,7 +36,7 @@ class TranslatorEngineLanguage extends Model
      */
     public static function getActive()
     {
-        $cachePrefix = config('translator_engine.cache.prefix', 'translator_engine_');
+        $cachePrefix = config('translator.cache.prefix', 'translator_');
         return Cache::remember("{$cachePrefix}active_languages", 86400, function () {
             return static::active()->get();
         });

@@ -1,20 +1,20 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Console;
+namespace Ataurbdx\Translator\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class MakeHybridCommand extends Command
 {
-    protected $signature = 'translator-engine:make:hybrid {domain : Domain cluster name (e.g. worlds, catalog)}';
+    protected $signature = 'translator:make:hybrid {domain : Domain cluster name (e.g. worlds, catalog)}';
 
     protected $description = 'Generate a grouped domain translation table migration';
 
     public function handle(): int
     {
         $domain = trim($this->argument('domain'));
-        $prefix = config('translator_engine.tables.prefix', 'translator_engine_');
+        $prefix = config('translator.tables.prefix', 'translator_');
         $targetTable = $prefix . $domain;
 
         $this->info("Creating grouped hybrid domain migration: {$targetTable}");
@@ -55,7 +55,7 @@ return new class extends Migration
 
         File::put($filePath, $stub);
         $this->info("✔ Hybrid migration created: database/migrations/{$fileName}");
-        $this->line("Any entity model in this domain can now use: <comment>protected \$translatorEngineTable = '{$targetTable}';</comment>");
+        $this->line("Any entity model in this domain can now use: <comment>protected \$translatorTable = '{$targetTable}';</comment>");
 
         return Command::SUCCESS;
     }

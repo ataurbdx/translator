@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Examples\Laravel;
+namespace Ataurbdx\Translator\Examples\Laravel;
 
-use Ataurbdx\TranslatorEngine\Facades\TranslatorEngine;
+use Ataurbdx\Translator\Facades\Translator;
 use Illuminate\Routing\Controller;
 
 class LaravelExampleUsageController extends Controller
@@ -10,6 +10,9 @@ class LaravelExampleUsageController extends Controller
     public function demo()
     {
         // 1. Eloquent Model Translations (Types 1-4)
+        $category = ExampleCategory::first();
+        $categoryTitle = $category ? $category->name : 'Electronics';
+
         // 2. Static UI Translation (Type 5) via translate()
         $addToCart = translate('button.add_to_cart');
 

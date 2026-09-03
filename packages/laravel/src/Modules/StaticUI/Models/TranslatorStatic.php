@@ -1,10 +1,10 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\StaticUI\Models;
+namespace Ataurbdx\Translator\Modules\StaticUI\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TranslatorEngineStatic extends Model
+class TranslatorStatic extends Model
 {
     protected $guarded = ['id'];
 
@@ -14,7 +14,7 @@ class TranslatorEngineStatic extends Model
 
     public function getTable()
     {
-        return config('translator_engine.tables.statics', 'translator_engine_statics');
+        return config('translator.tables.statics', 'translator_statics');
     }
 
     /**

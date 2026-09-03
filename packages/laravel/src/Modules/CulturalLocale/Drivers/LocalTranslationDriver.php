@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\CulturalLocale\Drivers;
+namespace Ataurbdx\Translator\Modules\CulturalLocale\Drivers;
 
-use Ataurbdx\TranslatorEngine\Modules\CulturalLocale\Models\TranslatorEngineLocale;
+use Ataurbdx\Translator\Modules\CulturalLocale\Models\TranslatorLocale;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 
@@ -13,13 +13,13 @@ class LocalTranslationDriver
      */
     public function getConfig(string $locale): array
     {
-        $cacheKey = "translator_engine_locale_rule_{$locale}";
-        $ttl = config('translator_engine.cache.ttl', 86400);
+        $cacheKey = "translator_locale_rule_{$locale}";
+        $ttl = config('translator.cache.ttl', 86400);
 
         return Cache::remember($cacheKey, $ttl, function () use ($locale) {
             // 1. Try Database
             try {
-                $record = TranslatorEngineLocale::where('code', $locale)->where('is_active', true)->first();
+                $record = TranslatorLocale::where('code', $locale)->where('is_active', true)->first();
                 if ($record) {
                     return [
                         'code'            => $record->code,

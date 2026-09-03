@@ -1,5 +1,5 @@
 {
-    "name": "ataurbdx/translator-engine",
+    "name": "ataurbdx/translator",
     "version": "1.0.0-dev",
     "description": "The Master Universal Translation & Localization Engine for Laravel.",
     "keywords": [
@@ -34,7 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ataurbdx\\TranslatorEngine\\": "src/"
+            "Ataurbdx\\Translator\\": "src/"
         },
         "files": [
             "src/Helpers/helpers.php"
@@ -43,10 +43,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Ataurbdx\\TranslatorEngine\\TranslationServiceProvider"
+                "Ataurbdx\\Translator\\TranslationServiceProvider"
             ],
             "aliases": {
-                "TranslatorEngine": "Ataurbdx\\TranslatorEngine\\Facades\\TranslatorEngine"
+                "Translator": "Ataurbdx\\Translator\\Facades\\Translator"
             }
         }
     },

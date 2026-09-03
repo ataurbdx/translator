@@ -1,16 +1,16 @@
-export interface TranslatorEngineConfig {
+export interface TranslatorConfig {
     baseUrl: string;
     locale: string;
     fallbackLocale?: string;
 }
 
-export class TranslatorEngineClient {
+export class TranslatorClient {
     private baseUrl: string;
     private locale: string;
     private fallbackLocale: string;
     private cache: Record<string, string> = {};
 
-    constructor(config: TranslatorEngineConfig) {
+    constructor(config: TranslatorConfig) {
         this.baseUrl = config.baseUrl.replace(/\/$/, '');
         this.locale = config.locale || 'en';
         this.fallbackLocale = config.fallbackLocale || 'en';
@@ -20,7 +20,7 @@ export class TranslatorEngineClient {
      * Fetch static UI translations from Laravel backend
      */
     async loadStatic(group?: string): Promise<Record<string, string>> {
-        const url = `${this.baseUrl}/api/v1/translator-engine/static?locale=${this.locale}` + (group ? `&group=${group}` : '');
+        const url = `${this.baseUrl}/api/v1/translator/static?locale=${this.locale}` + (group ? `&group=${group}` : '');
         try {
             const res = await fetch(url, {
                 headers: { 'Accept': 'application/json' }
@@ -31,7 +31,7 @@ export class TranslatorEngineClient {
                 return this.cache;
             }
         } catch (e) {
-            console.error('[TranslatorEngine] Failed to load translations', e);
+            console.error('[Translator] Failed to load translations', e);
         }
         return this.cache;
     }

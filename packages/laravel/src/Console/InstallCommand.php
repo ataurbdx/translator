@@ -1,20 +1,20 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Console;
+namespace Ataurbdx\Translator\Console;
 
 use Illuminate\Console\Command;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'translator-engine:install 
+    protected $signature = 'translator:install 
                             {--all : Install and run all migrations without prompting}';
 
-    protected $description = 'Install and configure TranslatorEngine package';
+    protected $description = 'Install and configure Translator package';
 
     public function handle(): int
     {
         $this->info('╔══════════════════════════════════════════════════════════════╗');
-        $this->info('║             TranslatorEngine Installer                     ║');
+        $this->info('║                  Translator Installer                        ║');
         $this->info('║       The Master Universal Translation & Localizer           ║');
         $this->info('╚══════════════════════════════════════════════════════════════╝');
         $this->newLine();
@@ -22,15 +22,15 @@ class InstallCommand extends Command
         // 1. Publish Configuration
         $this->comment('1. Publishing config file...');
         $this->callSilent('vendor:publish', [
-            '--provider' => 'Ataurbdx\TranslatorEngine\TranslationServiceProvider',
+            '--provider' => 'Ataurbdx\Translator\TranslationServiceProvider',
             '--tag'      => 'config',
         ]);
-        $this->info('✔ Config published to config/translator_engine.php');
+        $this->info('✔ Config published to config/translator.php');
 
         // 2. Publish Migrations
         $this->comment('2. Publishing core migrations...');
         $this->callSilent('vendor:publish', [
-            '--provider' => 'Ataurbdx\TranslatorEngine\TranslationServiceProvider',
+            '--provider' => 'Ataurbdx\Translator\TranslationServiceProvider',
             '--tag'      => 'migrations',
         ]);
         $this->info('✔ Core migrations published.');
@@ -44,9 +44,9 @@ class InstallCommand extends Command
         }
 
         $this->newLine();
-        $this->info('🎉 TranslatorEngine successfully installed!');
-        $this->line('You can now add <comment>use HasTranslatorEngine;</comment> to your Eloquent models.');
-        $this->line('Call <comment>{{ te("button.add_to_cart") }}</comment> or <comment>{{ te_digits("2026") }}</comment> in Blade views.');
+        $this->info('🎉 Translator successfully installed!');
+        $this->line('You can now add <comment>use HasTranslator;</comment> to your Eloquent models.');
+        $this->line('Call <comment>{{ translate("button.add_to_cart") }}</comment> or <comment>{{ translate("2026", type: "digits") }}</comment> in Blade views.');
 
         return Command::SUCCESS;
     }

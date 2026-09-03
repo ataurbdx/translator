@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { TranslatorEngineClient } from '../../packages/js/src/index';
-import { TranslatorEngineProvider, useTranslatorEngine } from '../../packages/js/src/react';
+import { TranslatorClient } from '../../packages/js/src/index';
+import { TranslatorProvider, useTranslator } from '../../packages/js/src/react';
 
 // 1. Initialize client pointing to your Laravel backend
-const client = new TranslatorEngineClient({
+const client = new TranslatorClient({
     baseUrl: 'https://api.yourdomain.com',
     locale: 'bn',
     fallbackLocale: 'en',
 });
 
-// 2. Sample Component using TranslatorEngine hook
+// 2. Sample Component using Translator hook
 function ProductCard() {
-    const { t, formatDigits, formatNumber, loaded } = useTranslatorEngine();
+    const { t, formatDigits, formatNumber, loaded } = useTranslator();
 
     if (!loaded) {
         return <div>Loading translations...</div>;
@@ -41,11 +41,11 @@ function ProductCard() {
 // 3. Main App Wrapping with Provider
 export default function App() {
     return (
-        <TranslatorEngineProvider value={client}>
+        <TranslatorProvider value={client}>
             <div style={{ padding: '24px' }}>
-                <h1>TranslatorEngine - React / Next.js Demo</h1>
+                <h1>Translator - React / Next.js Demo</h1>
                 <ProductCard />
             </div>
-        </TranslatorEngineProvider>
+        </TranslatorProvider>
     );
 }

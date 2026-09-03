@@ -1,17 +1,17 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\Settings\Models;
+namespace Ataurbdx\Translator\Modules\Settings\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 
-class TranslatorEngineSetting extends Model
+class TranslatorSetting extends Model
 {
     protected $guarded = ['id'];
 
     public function getTable()
     {
-        return config('translator_engine.tables.settings', 'translator_engine_settings');
+        return config('translator.tables.settings', 'translator_settings');
     }
 
     /**

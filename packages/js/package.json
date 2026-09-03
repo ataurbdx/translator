@@ -1,7 +1,7 @@
 {
-  "name": "@ataurbdx/translator-engine",
+  "name": "@ataurbdx/translator",
   "version": "1.0.0",
-  "description": "Universal Translation & Cultural Localization Client for React, Next.js, and MERN applications, powered by TranslatorEngine backend.",
+  "description": "Universal Translation & Cultural Localization Client for React, Next.js, and MERN applications, powered by Translator backend.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "nextjs",
     "mern",
     "bengali",
-    "translator-engine"
+    "translator"
   ],
   "author": "Ataur Rahman <ataurbdx@gmail.com>",
   "license": "MIT",

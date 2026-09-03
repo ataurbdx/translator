@@ -1,28 +1,28 @@
-# Master Translation Engine (`TranslatorEngine`)
+# Master Universal Translator (`Translator`)
 ## Complete API Reference & Examples for All 10 Translation Types
 
 This guide provides exhaustive code examples showing **both ways to call each of the 10 types**:
-1. **Via Direct Engine Call**: `TranslatorEngine::type(...)` or Shorthand `TranslatorEngine::[type](...)`
+1. **Via Direct Translator Call**: `Translator::type(...)` or Shorthand `Translator::[type](...)`
 2. **Via Eloquent Models / Blade Helpers**: Natural `$model->field` and `translate(...)` syntax.
 
 ---
 
 ### Master Summary: How All 10 Types Are Called
 
-> **Universal "Zero-Blank" Guarantee**: Every single translation type automatically falls back to its original default value (e.g. `$category->getRawOriginal('title')` or `translator_statics.default`) if the requested language is missing. It never returns blank or broken text.
+> **Universal "Zero-Blank" Guarantee**: Every single translation type automatically falls back to its original default value (e.g. `$category->getRawOriginal('title')` or `translator_statics.name`) if the requested language is missing. It never returns blank or broken text.
 
-| # | Type | Direct Engine Call | Model / View Call |
+| # | Type | Direct Translator Call | Model / View Call |
 |---|---|---|---|
-| **1** | `inline` | `TranslatorEngine::inline(Tag::class)->get($tagId, 'name', 'bn')` | `$tag->name` or `$tag->translate('name', 'bn')` |
-| **2** | `internal` | `TranslatorEngine::internal(Category::class)->get($id, 'name', 'bn')` | `$category->name` or `$category->translate('name', 'bn')` |
-| **3** | `external` | `TranslatorEngine::external(Listing::class)->get($id, 'title', 'bn')` | `$listing->title` or `$listing->translate('title', 'bn')` |
-| **4** | `hybrid` | `TranslatorEngine::hybrid(City::class)->get($id, 'name', 'bn')` | `$city->name` or `$city->translate('name', 'bn')` |
-| **5** | `static` | `TranslatorEngine::static()->get('button.add_to_cart', 'bn')` | `{{ translate('button.add_to_cart') }}` |
-| **6** | `json` | `TranslatorEngine::json()->get('Add to Cart', 'bn')` | `{{ __('Add to Cart') }}` |
-| **7** | `file` | `TranslatorEngine::file()->get('auth.failed', 'bn')` | `{{ __('auth.failed') }}` |
-| **8** | `local` | `TranslatorEngine::local()->digits('2026', 'bn')` | `{{ translator_digits('2026') }}` |
-| **9** | `ai` | `TranslatorEngine::ai()->translate('Hello', 'en', 'bn')` | `TranslatorEngine::ai()->syncModel($listing, ['title'])` |
-| **10** | `api` | `TranslatorEngine::api()->export('bn')` | Route: `GET /api/v1/translator-engine/...` |
+| **1** | `inline` | `Translator::inline(Tag::class)->get($tagId, 'name', 'bn')` | `$tag->name` or `$tag->translate('name', 'bn')` |
+| **2** | `internal` | `Translator::internal(Category::class)->get($id, 'name', 'bn')` | `$category->name` or `$category->translate('name', 'bn')` |
+| **3** | `external` | `Translator::external(Listing::class)->get($id, 'title', 'bn')` | `$listing->title` or `$listing->translate('title', 'bn')` |
+| **4** | `hybrid` | `Translator::hybrid(City::class)->get($id, 'name', 'bn')` | `$city->name` or `$city->translate('name', 'bn')` |
+| **5** | `static` | `Translator::static()->get('button.add_to_cart', 'bn')` | `{{ translate('button.add_to_cart') }}` |
+| **6** | `json` | `Translator::json()->get('Add to Cart', 'bn')` | `{{ __('Add to Cart') }}` |
+| **7** | `file` | `Translator::file()->get('auth.failed', 'bn')` | `{{ __('auth.failed') }}` |
+| **8** | `local` | `Translator::local()->digits('2026', 'bn')` | `{{ translate('2026', type: 'digits') }}` |
+| **9** | `ai` | `Translator::ai()->translate('Hello', 'bn', 'en')` | `Translator::ai()->translateModel($listing, ['title'], 'bn')` |
+| **10** | `api` | `Translator::static()->get(...)` | Route: `GET /api/v1/translator/...` |
 
 ---
 
@@ -31,25 +31,27 @@ Translations are stored directly inside the model table's JSON column.
 
 ### Way A: Direct Engine Call (Without Model Instance)
 ```php
-use Ataurbdx\TranslatorEngine\Facades\TranslatorEngine;
+use Ataurbdx\Translator\Facades\Translator;
 
 // Long syntax with type():
-$value = TranslatorEngine::type('inline', Tag::class)->get($tagId, 'name', 'bn');
+$value = Translator::type('inline', Tag::class)->get($tagId, 'name', 'bn');
 
 // Fluent shorthand:
-$value = TranslatorEngine::inline(Tag::class)->get($tagId, 'name', 'bn');
+$value = Translator::inline(Tag::class)->get($tagId, 'name', 'bn');
 
 // Setting a translation directly:
-TranslatorEngine::inline(Tag::class)->set($tagId, 'name', 'bn', 'নতুন ট্যাগ');
+Translator::inline(Tag::class)->set($tagId, 'name', 'bn', 'নতুন ট্যাগ');
 ```
 
 ### Way B: Via Eloquent Model
 ```php
+use Ataurbdx\Translator\Core\Traits\HasTranslator;
+
 class Tag extends Model
 {
-    use HasTranslatorEngine;
+    use HasTranslator;
 
-    protected $translatorEngineType = 'inline';
+    protected $translatorType = 'inline';
     protected array $translatable = ['name'];
 }
 
@@ -63,27 +65,27 @@ $tag->setTranslation('name', 'bn', 'নতুন')->save();
 ---
 
 ## 2. Type 2: `TranslationInternal` (`internal`)
-Shared polymorphic table (`translator_engine_dynamics`) for multiple small/medium models.
+Shared polymorphic table (`translator_dynamics`) for multiple small/medium models.
 
 ### Way A: Direct Engine Call
 ```php
 // Long syntax:
-$name = TranslatorEngine::type('internal', Category::class)->get($categoryId, 'name', 'bn');
+$name = Translator::type('internal', Category::class)->get($categoryId, 'name', 'bn');
 
 // Fluent shorthand:
-$name = TranslatorEngine::internal(Category::class)->get($categoryId, 'name', 'bn');
+$name = Translator::internal(Category::class)->get($categoryId, 'name', 'bn');
 
 // Set translation:
-TranslatorEngine::internal(Category::class)->set($categoryId, 'name', 'bn', 'ইলেকট্রনিক্স');
+Translator::internal(Category::class)->set($categoryId, 'name', 'bn', 'ইলেকট্রনিক্স');
 ```
 
 ### Way B: Via Eloquent Model
 ```php
 class Category extends Model
 {
-    use HasTranslatorEngine;
+    use HasTranslator;
 
-    protected $translatorEngineType = 'internal';
+    protected $translatorType = 'internal';
     protected array $translatable = ['name', 'description'];
 }
 
@@ -95,28 +97,28 @@ echo $cat->translate('name', 'bn');
 ---
 
 ## 3. Type 3: `TranslationExternal` (`external`)
-Dedicated translation table per model (`translator_engine_listings`) for high-traffic models.
+Dedicated translation table per model (`translator_listings`) for high-traffic models.
 
 ### Way A: Direct Engine Call
 ```php
 // Long syntax:
-$title = TranslatorEngine::type('external', Listing::class)->get($listingId, 'title', 'bn');
+$title = Translator::type('external', Listing::class)->get($listingId, 'title', 'bn');
 
 // Fluent shorthand:
-$title = TranslatorEngine::external(Listing::class)->get($listingId, 'title', 'bn');
+$title = Translator::external(Listing::class)->get($listingId, 'title', 'bn');
 
 // Set translation:
-TranslatorEngine::external(Listing::class)->set($listingId, 'title', 'bn', 'বনানী বিলাসবহুল ফ্ল্যাট');
+Translator::external(Listing::class)->set($listingId, 'title', 'bn', 'বনানী বিলাসবহুল ফ্ল্যাট');
 ```
 
 ### Way B: Via Eloquent Model
 ```php
 class Listing extends Model
 {
-    use HasTranslatorEngine;
+    use HasTranslator;
 
-    protected $translatorEngineType = 'external';
-    protected string $translatorEngineTable = 'translator_engine_listings'; // Auto-inferred
+    protected $translatorType = 'external';
+    protected string $translatorTable = 'translator_listings'; // Auto-inferred
     protected array $translatable = ['title', 'description', 'address'];
 }
 
@@ -131,28 +133,25 @@ $listings = Listing::withTranslations()->paginate(20);
 ---
 
 ## 4. Type 4: `TranslationHybrid` (`hybrid`)
-Grouped domain table sharing translations among multiple related models (`translator_engine_worlds`).
+Grouped domain table sharing translations among multiple related models (`translator_worlds`).
 
 ### Way A: Direct Engine Call
 ```php
 // Long syntax:
-$name = TranslatorEngine::type('hybrid', City::class)->get($cityId, 'name', 'bn');
+$name = Translator::type('hybrid', City::class)->get($cityId, 'name', 'bn');
 
 // Fluent shorthand:
-$name = TranslatorEngine::hybrid(City::class)->get($cityId, 'name', 'bn');
-
-// Specifying entity_type directly with raw table name:
-$name = TranslatorEngine::hybrid('translator_engine_worlds', 'city')->get($cityId, 'name', 'bn');
+$name = Translator::hybrid(City::class)->get($cityId, 'name', 'bn');
 ```
 
 ### Way B: Via Eloquent Model
 ```php
 class City extends Model
 {
-    use HasTranslatorEngine;
+    use HasTranslator;
 
-    protected $translatorEngineType = 'hybrid';
-    protected string $translatorEngineTable = 'translator_engine_worlds';
+    protected $translatorType = 'hybrid';
+    protected string $translatorTable = 'translator_worlds';
     protected string $entityType = 'city'; // Used by Country, State, City, SubCity
     protected array $translatable = ['name', 'native'];
 }
@@ -169,18 +168,18 @@ Database-driven UI keys (`translator_statics`) + Redis/Memory caching.
 
 ### Database Record Structure:
 * `key`: `button.add_to_cart`
-* `default`: `Add to Cart`
+* `name`: `Add to Cart`
 * `value`: `{"en": "Add to Cart", "bn": "কার্টে যোগ করুন"}`
 
 ### Way A: Direct Engine Call
 ```php
 // Query by structured key:
-$text = TranslatorEngine::static()->get('button.add_to_cart', 'bn'); // Returns 'কার্টে যোগ করুন'
+$text = Translator::static()->get('button.add_to_cart', 'bn'); // Returns 'কার্টে যোগ করুন'
 
-// Setting or updating a static key in database with default fallback:
-TranslatorEngine::static()->set(
+// Setting or updating a static key in database:
+Translator::static()->set(
     key: 'button.add_to_cart',
-    default: 'Add to Cart',
+    name: 'Add to Cart',
     values: [
         'en' => 'Add to Cart',
         'bn' => 'কার্টে যোগ করুন'
@@ -194,7 +193,7 @@ TranslatorEngine::static()->set(
 {{-- Calling by key from Database: --}}
 <button>{{ translate('button.add_to_cart') }}</button>
 {{-- If locale is 'bn' -> outputs: 'কার্টে যোগ করুন' --}}
-{{-- If missing in 'bn' -> auto fallback to default: 'Add to Cart' --}}
+{{-- If missing in 'bn' -> auto fallback to default name: 'Add to Cart' --}}
 ```
 
 ---
@@ -202,12 +201,12 @@ TranslatorEngine::static()->set(
 ## 6. Type 6: `TranslationJson` (`json`)
 Flat JSON files on disk (`lang/en.json`, `lang/bn.json`).
 
-### Export from Database to JSON using `default` as JSON key:
-When exporting, the engine takes the `default` (`"Add to Cart"`) as the JSON key:
+### Export from Database to JSON using `name` as JSON key:
+When exporting, the engine takes `name` (`"Add to Cart"`) as the JSON key:
 
 ```php
 // Command or Engine call to export:
-TranslatorEngine::json()->exportFromDatabase('bn', resource_path('lang/bn.json'));
+Translator::json()->exportFromDatabase('bn', resource_path('lang/bn.json'));
 ```
 
 Generates `resources/lang/bn.json`:
@@ -224,7 +223,6 @@ Generates `resources/lang/bn.json`:
 {{-- If locale is 'bn' -> outputs: 'কার্টে যোগ করুন' --}}
 {{-- If locale is 'en' or missing -> outputs the string itself: 'Add to Cart' --}}
 ```
-```
 
 ---
 
@@ -234,14 +232,11 @@ PHP array files in subfolders (`lang/en/auth.php`, `lang/bn/auth.php`).
 ### Way A: Direct Engine Call
 ```php
 // Read string from specific group PHP file:
-$val = TranslatorEngine::type('file')->get('auth.failed', 'bn');
-$val = TranslatorEngine::file()->get('auth.failed', 'bn');
+$val = Translator::type('file')->get('auth.failed', 'bn');
+$val = Translator::file()->get('auth.failed', 'bn');
 
 // Export Database keys to grouped PHP array files:
-TranslatorEngine::file()->exportGroupToPhp('auth', 'bn');
-
-// Import auth.php into Database:
-TranslatorEngine::file()->importGroupFromPhp('auth', 'bn');
+Translator::file()->exportGroupToPhp('auth', 'bn');
 ```
 
 ### Way B: In Blade / Laravel Native
@@ -258,27 +253,27 @@ Cultural & regional formatting: digits, South Asian grouping, dates, and number-
 ### Way A: Direct Engine Call
 ```php
 // 1. Localized Digits:
-$digits = TranslatorEngine::local()->digits('2026', 'bn'); // '২০২৬'
+$digits = Translator::local()->digits('2026', 'bn'); // '২০২৬'
 
 // 2. Localized Numbers (South Asian Lakh/Crore grouping):
-$num = TranslatorEngine::local()->number(1234567, 0, 'bn'); // '১২,৩৪,৫৬৭'
-$numEn = TranslatorEngine::local()->number(1234567, 2, 'en'); // '1,234,567.00'
+$num = Translator::local()->number(1234567, 0, 'bn'); // '১২,৩৪,৫৬৭'
+$numEn = Translator::local()->number(1234567, 2, 'en'); // '1,234,567.00'
 
 // 3. Localized Dates:
-$date = TranslatorEngine::local()->date(now(), false, 'bn'); // '০৯ সেপ্টেম্বর ২০২৬'
-$dateTime = TranslatorEngine::local()->date(now(), true, 'bn'); // with time
+$date = Translator::local()->date(now(), false, 'bn'); // '০৯ সেপ্টেম্বর ২০২৬'
+$dateTime = Translator::local()->date(now(), true, 'bn'); // with time
 
 // 4. Financial Number-To-Words (Cheques, Invoices):
-$words = TranslatorEngine::local()->words(1500, 'BDT', 'bn'); // 'এক হাজার পাঁচশত টাকা মাত্র'
-$wordsEn = TranslatorEngine::local()->words(1500, 'USD', 'en'); // 'One Thousand Five Hundred USD Only'
+$words = Translator::local()->words(1500, 'BDT', 'bn'); // 'এক হাজার পাঁচশত টাকা মাত্র'
+$wordsEn = Translator::local()->words(1500, 'USD', 'en'); // 'One Thousand Five Hundred USD Only'
 ```
 
 ### Way B: In Blade Views / Helpers
 ```blade
-{{ translate_digits('2026') }}
-{{ translate_number(1250000) }}
-{{ translate_date($order->created_at) }}
-{{ translate_words($invoice->grand_total) }}
+{{ translate('2026', type: 'digits') }}
+{{ translate(1250000, type: 'number') }}
+{{ translate($order->created_at, type: 'date') }}
+{{ translate($invoice->grand_total, type: 'words', currency: 'BDT') }}
 ```
 
 ---
@@ -289,19 +284,16 @@ AI-powered automatic translation using Google Gemini, OpenAI, Claude, or DeepL.
 ### Way A: Direct Engine Call
 ```php
 // 1. Translate a raw text string on demand:
-$translated = TranslatorEngine::ai()->translate('Welcome to our application', 'en', 'bn');
+$translated = Translator::ai()->translate('Welcome to our application', 'bn', 'en');
 
 // 2. Translate an associative array:
-$translations = TranslatorEngine::ai()->translateBatch([
+$translations = Translator::ai()->translateBatch([
     'title' => 'Luxury Apartment',
     'location' => 'Dhaka, Bangladesh'
-], 'en', 'bn');
+], 'bn', 'en');
 
 // 3. Auto-translate missing fields of an Eloquent Model:
-TranslatorEngine::ai()->translateModel($listing, ['title', 'description'], 'bn');
-
-// 4. Auto-translate all untranslated keys in translator_statics table:
-TranslatorEngine::ai()->translateMissingStatic('en', 'bn');
+Translator::ai()->translateModel($listing, ['title', 'description'], 'bn');
 ```
 
 ### Way B: Via Artisan CLI
@@ -318,45 +310,19 @@ php artisan translator:ai-sync --from=en --to=bn --group=menu
 ## 10. Type 10: `TranslationAPI` (`api`)
 Headless REST endpoints for MERN (React), Next.js, Vue, Nuxt, and Mobile Apps.
 
-### Way A: Direct Engine Call (In Controller / Service)
-```php
-// Export all translations as clean API payload for frontend client:
-$payload = TranslatorEngine::api()->getTranslationsPayload('bn', 'common');
-
-// Return formatted JSON response with ETag & Cache headers:
-return TranslatorEngine::api()->response('bn', 'auth');
-```
-
-### Way B: Direct HTTP Endpoints (MERN / React / Flutter Consumption)
+### HTTP Endpoints:
 ```http
 // 1. Get Static UI translations for a locale:
-GET /api/v1/translator/static?locale=bn&group=auth
-Response:
-{
-    "status": "success",
-    "locale": "bn",
-    "data": {
-        "welcome": "স্বাগতম",
-        "login": "লগইন করুন"
-    }
-}
+GET /api/v1/translator/static?locale=bn&group=common
 
 // 2. Get active locales and cultural configuration:
 GET /api/v1/translator/locales
-Response:
-{
-    "locales": ["en", "bn"],
-    "default": "en",
-    "meta": {
-        "bn": { "direction": "ltr", "currency": "BDT", "digits": ["০","১",...] }
-    }
-}
 
 // 3. Batch translate dynamic strings:
 POST /api/v1/translator/batch
 Body:
 {
     "locale": "bn",
-    "keys": ["Add to Cart", "Checkout", "Order Details"]
+    "keys": ["button.add_to_cart", "button.checkout"]
 }
 ```

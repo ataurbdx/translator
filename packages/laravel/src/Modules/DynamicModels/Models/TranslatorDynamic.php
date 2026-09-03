@@ -1,10 +1,10 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\DynamicModels\Models;
+namespace Ataurbdx\Translator\Modules\DynamicModels\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TranslatorEngineDynamic extends Model
+class TranslatorDynamic extends Model
 {
     protected $guarded = ['id'];
 
@@ -14,7 +14,7 @@ class TranslatorEngineDynamic extends Model
 
     public function getTable()
     {
-        return config('translator_engine.tables.dynamics', 'translator_engine_dynamics');
+        return config('translator.tables.dynamics', 'translator_dynamics');
     }
 
     /**

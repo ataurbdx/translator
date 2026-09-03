@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers;
+namespace Ataurbdx\Translator\Modules\DynamicModels\Drivers;
 
-use Ataurbdx\TranslatorEngine\Core\Contracts\TranslationDriverInterface;
+use Ataurbdx\Translator\Core\Contracts\TranslationDriverInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -18,12 +18,12 @@ class ExternalTranslationDriver implements TranslationDriverInterface
 
     protected function getTableName(Model $model): string
     {
-        if (!empty($model->translatorEngineTable)) {
-            return $model->translatorEngineTable;
+        if (!empty($model->translatorTable)) {
+            return $model->translatorTable;
         }
 
         $base = $model->getTable();
-        $prefix = config('translator_engine.tables.prefix', 'translator_engine_');
+        $prefix = config('translator.tables.prefix', 'translator_');
         return $prefix . $base;
     }
 
@@ -44,14 +44,19 @@ class ExternalTranslationDriver implements TranslationDriverInterface
         $fallback = $default !== null ? $default : ($model->getRawOriginal($field) ?? $model->getAttribute($field));
 
         // 1. Check if translation relation is eager loaded
-        if ($model->relationLoaded('translatorEngineExternal')) {
-            $record = $model->translatorEngineExternal->where('locale', $locale)->first();
+        $relation = null;
+        if ($model->relationLoaded('translatorExternal')) {
+            $relation = $model->translatorExternal;
+        }
+
+        if ($relation) {
+            $record = $relation->where('locale', $locale)->first();
             if ($record && !empty($record->{$field})) {
                 return $record->{$field};
             }
             // Check fallback locale
-            $fallbackLocale = config('translator_engine.fallback_locale', 'en');
-            $fbRecord = $model->translatorEngineExternal->where('locale', $fallbackLocale)->first();
+            $fallbackLocale = config('translator.fallback_locale', 'en');
+            $fbRecord = $relation->where('locale', $fallbackLocale)->first();
             if ($fbRecord && !empty($fbRecord->{$field})) {
                 return $fbRecord->{$field};
             }
@@ -61,8 +66,8 @@ class ExternalTranslationDriver implements TranslationDriverInterface
         // 2. Query with cache
         $table = $this->getTableName($model);
         $fk = $this->getForeignKey($model);
-        $cacheKey = "translator_engine_ext_{$table}_{$model->getKey()}_{$locale}_{$field}";
-        $ttl = config('translator_engine.cache.ttl', 86400);
+        $cacheKey = "translator_ext_{$table}_{$model->getKey()}_{$locale}_{$field}";
+        $ttl = config('translator.cache.ttl', 86400);
 
         return Cache::remember($cacheKey, $ttl, function () use ($model, $table, $fk, $locale, $field, $fallback) {
             $row = DB::table($table)
@@ -75,7 +80,7 @@ class ExternalTranslationDriver implements TranslationDriverInterface
             }
 
             // Fallback locale check
-            $fallbackLocale = config('translator_engine.fallback_locale', 'en');
+            $fallbackLocale = config('translator.fallback_locale', 'en');
             if ($locale !== $fallbackLocale) {
                 $fbRow = DB::table($table)
                     ->where($fk, $model->getKey())
@@ -131,7 +136,7 @@ class ExternalTranslationDriver implements TranslationDriverInterface
             ]);
         }
 
-        Cache::forget("translator_engine_ext_{$table}_{$id}_{$locale}_{$field}");
+        Cache::forget("translator_ext_{$table}_{$id}_{$locale}_{$field}");
     }
 
     public function delete(mixed $target, ?string $field = null): bool

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\StaticUI\Drivers;
+namespace Ataurbdx\Translator\Modules\StaticUI\Drivers;
 
-use Ataurbdx\TranslatorEngine\Modules\StaticUI\Models\TranslatorEngineStatic;
+use Ataurbdx\Translator\Modules\StaticUI\Models\TranslatorStatic;
 use Illuminate\Support\Facades\File;
 
 class FileTranslationDriver
@@ -26,7 +26,7 @@ class FileTranslationDriver
             File::makeDirectory($targetDir, 0755, true);
         }
 
-        $records = TranslatorEngineStatic::where('group', $group)->get();
+        $records = TranslatorStatic::where('group', $group)->get();
         $array = [];
 
         foreach ($records as $record) {

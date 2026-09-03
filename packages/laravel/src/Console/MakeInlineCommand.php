@@ -1,13 +1,13 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Console;
+namespace Ataurbdx\Translator\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class MakeInlineCommand extends Command
 {
-    protected $signature = 'translator-engine:make:inline 
+    protected $signature = 'translator:make:inline 
                             {table : The table name to modify} 
                             {column : The column to convert to JSON}';
 

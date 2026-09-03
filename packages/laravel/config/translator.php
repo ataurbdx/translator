@@ -11,8 +11,8 @@ return [
     | Fallback locale is returned whenever a translation key is missing.
     |
     */
-    'default_locale' => env('TRANSLATOR_ENGINE_DEFAULT_LOCALE', 'en'),
-    'fallback_locale' => env('TRANSLATOR_ENGINE_FALLBACK_LOCALE', 'en'),
+    'default_locale' => env('TRANSLATOR_DEFAULT_LOCALE', 'en'),
+    'fallback_locale' => env('TRANSLATOR_FALLBACK_LOCALE', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,16 +52,16 @@ return [
     | Database Table Names & Prefix
     |--------------------------------------------------------------------------
     |
-    | Unified table prefix for all database tables managed by TranslatorEngine.
+    | Unified table prefix for all database tables managed by Translator.
     |
     */
     'tables' => [
-        'prefix' => 'translator_engine_',
-        'languages' => 'translator_engine_languages',
-        'settings' => 'translator_engine_settings',
-        'statics' => 'translator_engine_statics',
-        'dynamics' => 'translator_engine_dynamics',
-        'locales' => 'translator_engine_locales',
+        'prefix' => 'translator_',
+        'languages' => 'translator_languages',
+        'settings' => 'translator_settings',
+        'statics' => 'translator_statics',
+        'dynamics' => 'translator_dynamics',
+        'locales' => 'translator_locales',
     ],
 
     /*
@@ -73,10 +73,10 @@ return [
     |
     */
     'cache' => [
-        'enabled' => env('TRANSLATOR_ENGINE_CACHE_ENABLED', true),
-        'driver' => env('TRANSLATOR_ENGINE_CACHE_DRIVER', null), // null defaults to cache.default
-        'prefix' => 'translator_engine_',
-        'ttl' => env('TRANSLATOR_ENGINE_CACHE_TTL', 86400), // 24 hours in seconds
+        'enabled' => env('TRANSLATOR_CACHE_ENABLED', true),
+        'driver' => env('TRANSLATOR_CACHE_DRIVER', null), // null defaults to cache.default
+        'prefix' => 'translator_',
+        'ttl' => env('TRANSLATOR_CACHE_TTL', 86400), // 24 hours in seconds
     ],
 
     /*
@@ -88,7 +88,7 @@ return [
     |
     */
     'local' => [
-        'driver' => env('TRANSLATOR_ENGINE_LOCAL_DRIVER', 'hybrid'), // 'database', 'file', or 'hybrid'
+        'driver' => env('TRANSLATOR_LOCAL_DRIVER', 'hybrid'), // 'database', 'file', or 'hybrid'
         'export_path' => resource_path('lang/locales'),
     ],
 
@@ -101,7 +101,7 @@ return [
     |
     */
     'ai' => [
-        'default_provider' => env('TRANSLATOR_ENGINE_AI_PROVIDER', 'gemini'), // 'gemini', 'openai', 'deepl'
+        'default_provider' => env('TRANSLATOR_AI_PROVIDER', 'gemini'), // 'gemini', 'openai', 'deepl'
         'providers' => [
             'gemini' => [
                 'api_key' => env('GEMINI_API_KEY', ''),
@@ -126,8 +126,8 @@ return [
     |
     */
     'api' => [
-        'enabled' => env('TRANSLATOR_ENGINE_API_ENABLED', true),
-        'prefix' => 'api/v1/translator-engine',
+        'enabled' => env('TRANSLATOR_API_ENABLED', true),
+        'prefix' => 'api/v1/translator',
         'middleware' => ['api'],
         'etag' => true,
     ],

@@ -1,9 +1,9 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\AutomationAI\Drivers;
+namespace Ataurbdx\Translator\Modules\AutomationAI\Drivers;
 
-use Ataurbdx\TranslatorEngine\Core\Contracts\AiTranslatorInterface;
-use Ataurbdx\TranslatorEngine\Modules\Settings\Models\TranslatorEngineSetting;
+use Ataurbdx\Translator\Core\Contracts\AiTranslatorInterface;
+use Ataurbdx\Translator\Modules\Settings\Models\TranslatorSetting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 
@@ -14,8 +14,8 @@ class AiTranslationDriver implements AiTranslatorInterface
     public function __construct(?string $provider = null)
     {
         $this->provider = $provider 
-            ?? TranslatorEngineSetting::get('ai_provider') 
-            ?? config('translator_engine.ai.default_provider', 'gemini');
+            ?? TranslatorSetting::get('ai_provider') 
+            ?? config('translator.ai.default_provider', 'gemini');
     }
 
     public function translate(string $text, string $to, ?string $from = null, array $context = []): string
@@ -24,7 +24,7 @@ class AiTranslationDriver implements AiTranslatorInterface
             return '';
         }
 
-        $from = $from ?? config('translator_engine.default_locale', 'en');
+        $from = $from ?? config('translator.default_locale', 'en');
 
         return match ($this->provider) {
             'openai' => $this->translateWithOpenAi($text, $to, $from, $context),
@@ -47,7 +47,7 @@ class AiTranslationDriver implements AiTranslatorInterface
      */
     public function translateModel(Model $model, array $fields, string $to, ?string $from = null): bool
     {
-        $from = $from ?? config('translator_engine.default_locale', 'en');
+        $from = $from ?? config('translator.default_locale', 'en');
 
         foreach ($fields as $field) {
             $sourceText = $model->translate($field, $from) ?? $model->getRawOriginal($field);
@@ -62,14 +62,14 @@ class AiTranslationDriver implements AiTranslatorInterface
 
     protected function translateWithGemini(string $text, string $to, string $from, array $context): string
     {
-        $apiKey = TranslatorEngineSetting::get('gemini_api_key') 
-            ?? config('translator_engine.ai.providers.gemini.api_key');
+        $apiKey = TranslatorSetting::get('gemini_api_key') 
+            ?? config('translator.ai.providers.gemini.api_key');
 
         if (empty($apiKey)) {
             return $text; // Return original if key missing
         }
 
-        $model = config('translator_engine.ai.providers.gemini.model', 'gemini-1.5-flash');
+        $model = config('translator.ai.providers.gemini.model', 'gemini-1.5-flash');
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
         $prompt = "Translate the following text accurately from {$from} to {$to}. Return ONLY the translated string with no explanations or quotes:\n\n{$text}";
@@ -94,14 +94,14 @@ class AiTranslationDriver implements AiTranslatorInterface
 
     protected function translateWithOpenAi(string $text, string $to, string $from, array $context): string
     {
-        $apiKey = TranslatorEngineSetting::get('openai_api_key') 
-            ?? config('translator_engine.ai.providers.openai.api_key');
+        $apiKey = TranslatorSetting::get('openai_api_key') 
+            ?? config('translator.ai.providers.openai.api_key');
 
         if (empty($apiKey)) {
             return $text;
         }
 
-        $model = config('translator_engine.ai.providers.openai.model', 'gpt-4o-mini');
+        $model = config('translator.ai.providers.openai.model', 'gpt-4o-mini');
 
         try {
             $response = Http::withToken($apiKey)->timeout(15)->post('https://api.openai.com/v1/chat/completions', [
@@ -126,8 +126,8 @@ class AiTranslationDriver implements AiTranslatorInterface
 
     protected function translateWithDeepL(string $text, string $to, string $from): string
     {
-        $apiKey = TranslatorEngineSetting::get('deepl_api_key') 
-            ?? config('translator_engine.ai.providers.deepl.api_key');
+        $apiKey = TranslatorSetting::get('deepl_api_key') 
+            ?? config('translator.ai.providers.deepl.api_key');
 
         if (empty($apiKey)) return $text;
 

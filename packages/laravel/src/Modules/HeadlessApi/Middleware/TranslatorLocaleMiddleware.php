@@ -1,11 +1,11 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Modules\HeadlessApi\Middleware;
+namespace Ataurbdx\Translator\Modules\HeadlessApi\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 
-class TranslatorEngineLocaleMiddleware
+class TranslatorLocaleMiddleware
 {
     /**
      * Automatically set the application locale based on incoming request header, query, or session
@@ -16,7 +16,7 @@ class TranslatorEngineLocaleMiddleware
             ?? $request->header('Accept-Language')
             ?? $request->header('X-Locale')
             ?? session('locale')
-            ?? config('translator_engine.default_locale', 'en');
+            ?? config('translator.default_locale', 'en');
 
         // Sanitize locale (e.g., 'en-US' -> 'en')
         if (str_contains($locale, '-')) {
@@ -26,7 +26,7 @@ class TranslatorEngineLocaleMiddleware
             $locale = explode(',', $locale)[0];
         }
 
-        $supported = array_keys(config('translator_engine.supported_locales', ['en' => [], 'bn' => []]));
+        $supported = array_keys(config('translator.supported_locales', ['en' => [], 'bn' => []]));
 
         if (in_array($locale, $supported)) {
             app()->setLocale($locale);

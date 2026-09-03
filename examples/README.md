@@ -7,10 +7,10 @@ examples/
 │
 ├── laravel/
 │   ├── ExampleModels.php                 # Working Eloquent Models for all 4 types (Inline, Internal, External, Hybrid)
-│   └── LaravelExampleUsageController.php # Controller demonstrating te(), te_digits(), te_number(), te_words()
+│   └── LaravelExampleUsageController.php # Controller demonstrating translate() and translator()
 │
 ├── js/
-│   └── ReactExample.tsx                  # React / Next.js / MERN Component with useTranslatorEngine hook
+│   └── ReactExample.tsx                  # React / Next.js / MERN Component with useTranslator hook
 │
 └── flutter/
     └── flutter_example.dart              # Complete Flutter app with SharedPreferences cache & Bengali numerals
@@ -22,13 +22,13 @@ examples/
 
 ### A. Eloquent Models:
 ```php
-use Ataurbdx\TranslatorEngine\Core\Traits\HasTranslatorEngine;
+use Ataurbdx\Translator\Core\Traits\HasTranslator;
 
 class ExampleCategory extends Model
 {
-    use HasTranslatorEngine;
+    use HasTranslator;
 
-    protected $translatorEngineType = 'internal'; // 'inline', 'internal', 'external', 'hybrid'
+    protected $translatorType = 'internal'; // 'inline', 'internal', 'external', 'hybrid'
     protected array $translatable = ['name', 'description'];
 }
 ```
@@ -39,12 +39,12 @@ class ExampleCategory extends Model
 $name = $category->name; 
 
 // Static UI translations:
-$btn = te('button.add_to_cart');
+$btn = translate('button.add_to_cart');
 
 // Cultural formatters:
-$digits = te_digits('2026', 'bn');     // ২০২৬
-$number = te_number(1250000, 0, 'bn'); // ১২,৫০,০০০
-$words  = te_words(1500, 'BDT', 'bn'); // এক হাজার পাঁচশত টাকা মাত্র
+$digits = translate('2026', type: 'digits', locale: 'bn');     // ২০২৬
+$number = translate(1250000, type: 'number', locale: 'bn');    // ১২,৫০,০০০
+$words  = translate(1500, type: 'words', currency: 'BDT', locale: 'bn'); // এক হাজার পাঁচশত টাকা মাত্র
 ```
 
 ---
@@ -52,16 +52,16 @@ $words  = te_words(1500, 'BDT', 'bn'); // এক হাজার পাঁচশ
 ## ⚛️ 2. React / Next.js / MERN Examples (`examples/js/`)
 
 ```tsx
-import { TranslatorEngineClient } from '../../packages/js/src/index';
-import { TranslatorEngineProvider, useTranslatorEngine } from '../../packages/js/src/react';
+import { TranslatorClient } from '../../packages/js/src/index';
+import { TranslatorProvider, useTranslator } from '../../packages/js/src/react';
 
-const client = new TranslatorEngineClient({
+const client = new TranslatorClient({
     baseUrl: 'https://api.yourdomain.com',
     locale: 'bn',
 });
 
 function ProductCard() {
-    const { t, formatDigits, formatNumber } = useTranslatorEngine();
+    const { t, formatDigits, formatNumber } = useTranslator();
 
     return (
         <div>
@@ -80,23 +80,23 @@ function ProductCard() {
 
 ```dart
 import 'package:flutter/material.dart';
-import '../../packages/flutter/lib/translator_engine.dart';
+import '../../packages/flutter/lib/translator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize client pointing to Laravel backend
-  final engine = TranslatorEngine.init(
+  final translator = Translator.init(
     baseUrl: 'https://api.yourdomain.com',
     defaultLocale: 'bn',
   );
-  await engine.load();
+  await translator.load();
 
   runApp(const MyApp());
 }
 
 // In any Widget:
-Text(TranslatorEngine.instance.translate('button.add_to_cart'))
-Text(TranslatorEngine.instance.formatDigits(2026))       // ২০২৬
-Text(TranslatorEngine.instance.formatNumber(1250000))    // ১২,৫০,০০০
+Text(Translator.instance.translate('button.add_to_cart'))
+Text(Translator.instance.formatDigits(2026))       // ২০২৬
+Text(Translator.instance.formatNumber(1250000))    // ১২,৫০,০০০
 ```

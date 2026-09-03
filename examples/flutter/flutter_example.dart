@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import '../../packages/flutter/lib/translator_engine.dart';
+import '../../packages/flutter/lib/translator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1. Initialize TranslatorEngine pointing to your Laravel backend
-  final engine = TranslatorEngine.init(
+  // 1. Initialize Translator pointing to your Laravel backend
+  final translator = Translator.init(
     baseUrl: 'https://api.yourdomain.com',
     defaultLocale: 'bn',
   );
 
   // 2. Load cached translations immediately, then fetch fresh ones
-  await engine.load();
+  await translator.load();
 
-  runApp(const TranslatorEngineFlutterApp());
+  runApp(const TranslatorFlutterApp());
 }
 
-class TranslatorEngineFlutterApp extends StatelessWidget {
-  const TranslatorEngineFlutterApp({super.key});
+class TranslatorFlutterApp extends StatelessWidget {
+  const TranslatorFlutterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +32,14 @@ class TranslationDemoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final te = TranslatorEngine.instance;
+    final t = Translator.instance;
 
     const double price = 1250000;
     const int year = 2026;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(te.translate('app.title', defaultText: 'TranslatorEngine Flutter')),
+        title: Text(t.translate('app.title', defaultText: 'Translator Flutter')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,23 +48,23 @@ class TranslationDemoScreen extends StatelessWidget {
           children: [
             // Static Translation with Fallback
             Text(
-              te.translate('welcome.message', defaultText: 'Welcome to our platform'),
+              t.translate('welcome.message', defaultText: 'Welcome to our platform'),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
 
             // Localized Digits Formatting (2026 -> ২০২৬)
-            Text('Year: ${te.formatDigits(year)}'),
+            Text('Year: ${t.formatDigits(year)}'),
             const SizedBox(height: 8),
 
             // South Asian Number Grouping (1250000 -> ১২,৫০,০০০)
-            Text('Price: ৳${te.formatNumber(price)}'),
+            Text('Price: ৳${t.formatNumber(price)}'),
             const SizedBox(height: 20),
 
             // Button with Translated String
             ElevatedButton(
               onPressed: () {},
-              child: Text(te.translate('button.add_to_cart', defaultText: 'Add to Cart')),
+              child: Text(t.translate('button.add_to_cart', defaultText: 'Add to Cart')),
             ),
           ],
         ),

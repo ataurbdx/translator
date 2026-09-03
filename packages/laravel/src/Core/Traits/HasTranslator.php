@@ -1,23 +1,23 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Core\Traits;
+namespace Ataurbdx\Translator\Core\Traits;
 
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\InlineTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\InternalTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\ExternalTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\HybridTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Models\TranslatorEngineDynamic;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\InlineTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\InternalTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\ExternalTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\HybridTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Models\TranslatorDynamic;
 use Illuminate\Database\Eloquent\Builder;
 
-trait HasTranslatorEngine
+trait HasTranslator
 {
     /**
      * Boot the trait and register model lifecycle events
      */
-    protected static function bootHasTranslatorEngine(): void
+    protected static function bootHasTranslator(): void
     {
         static::deleted(function ($model) {
-            $driver = $model->getTranslatorEngineDriver();
+            $driver = $model->getTranslatorDriver();
             $driver->delete($model);
         });
     }
@@ -25,9 +25,9 @@ trait HasTranslatorEngine
     /**
      * Resolve the appropriate translation driver for this model
      */
-    public function getTranslatorEngineDriver()
+    public function getTranslatorDriver()
     {
-        $type = $this->translatorEngineType ?? 'internal';
+        $type = $this->translatorType ?? 'internal';
 
         return match ($type) {
             'inline'   => new InlineTranslationDriver($this),
@@ -41,9 +41,9 @@ trait HasTranslatorEngine
     /**
      * Internal morph relationship for Type 2 (internal)
      */
-    public function translatorEngineDynamics()
+    public function translatorDynamics()
     {
-        return $this->morphMany(TranslatorEngineDynamic::class, 'translatable');
+        return $this->morphMany(TranslatorDynamic::class, 'translatable');
     }
 
     /**
@@ -51,7 +51,7 @@ trait HasTranslatorEngine
      */
     public function translate(string $field, ?string $locale = null, mixed $default = null): mixed
     {
-        return $this->getTranslatorEngineDriver()->get($this, $field, $locale, $default);
+        return $this->getTranslatorDriver()->get($this, $field, $locale, $default);
     }
 
     /**
@@ -59,7 +59,7 @@ trait HasTranslatorEngine
      */
     public function setTranslation(string $field, string|array $localeOrValues, mixed $value = null): self
     {
-        $this->getTranslatorEngineDriver()->set($this, $field, $localeOrValues, $value);
+        $this->getTranslatorDriver()->set($this, $field, $localeOrValues, $value);
         return $this;
     }
 
@@ -114,10 +114,10 @@ trait HasTranslatorEngine
      */
     public function scopeWithTranslations(Builder $query): Builder
     {
-        $type = $this->translatorEngineType ?? 'internal';
+        $type = $this->translatorType ?? 'internal';
 
         if ($type === 'internal') {
-            return $query->with('translatorEngineDynamics');
+            return $query->with('translatorDynamics');
         }
 
         return $query;

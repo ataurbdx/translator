@@ -1,13 +1,13 @@
 <?php
 
-use Ataurbdx\TranslatorEngine\Modules\HeadlessApi\Controllers\TranslatorEngineApiController;
+use Ataurbdx\Translator\Modules\HeadlessApi\Controllers\TranslatorApiController;
 use Illuminate\Support\Facades\Route;
 
-$prefix = config('translator_engine.api.prefix', 'api/v1/translator-engine');
-$middleware = config('translator_engine.api.middleware', ['api']);
+$prefix = config('translator.api.prefix', 'api/v1/translator');
+$middleware = config('translator.api.middleware', ['api']);
 
 Route::prefix($prefix)->middleware($middleware)->group(function () {
-    Route::get('/static', [TranslatorEngineApiController::class, 'getStatic'])->name('translator-engine.api.static');
-    Route::get('/locales', [TranslatorEngineApiController::class, 'getLocales'])->name('translator-engine.api.locales');
-    Route::post('/batch', [TranslatorEngineApiController::class, 'batchTranslate'])->name('translator-engine.api.batch');
+    Route::get('/static', [TranslatorApiController::class, 'getStatic'])->name('translator.api.static');
+    Route::get('/locales', [TranslatorApiController::class, 'getLocales'])->name('translator.api.locales');
+    Route::post('/batch', [TranslatorApiController::class, 'batchTranslate'])->name('translator.api.batch');
 });

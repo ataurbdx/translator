@@ -1,5 +1,5 @@
 {
-    "name": "ataurbdx/translator-engine",
+    "name": "ataurbdx/translator",
     "description": "The Master Universal Translation & Localization Engine for Laravel, Flutter, and JavaScript.",
     "keywords": [
         "laravel",
@@ -19,7 +19,7 @@
     "authors": [
         {
             "name": "Ataur Rahman",
-            "email": "ataurbdx@gmail.com",
+            "email": "ataurrahman.wub@gmail.com",
             "role": "Lead Architect"
         }
     ],
@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ataurbdx\\TranslatorEngine\\": "packages/laravel/src/"
+            "Ataurbdx\\Translator\\": "packages/laravel/src/"
         },
         "files": [
             "packages/laravel/src/Helpers/helpers.php"
@@ -42,13 +42,19 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Ataurbdx\\TranslatorEngine\\TranslationServiceProvider"
+                "Ataurbdx\\Translator\\TranslationServiceProvider"
             ],
             "aliases": {
-                "TranslatorEngine": "Ataurbdx\\TranslatorEngine\\Facades\\TranslatorEngine"
+                "Translator": "Ataurbdx\\Translator\\Facades\\Translator"
             }
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "translator": {
+            "type": "vcs",
+            "url": "https://github.com/ataurbdx/translator.git"
+        }
+    }
 }

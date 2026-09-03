@@ -1,14 +1,14 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Console;
+namespace Ataurbdx\Translator\Console;
 
-use Ataurbdx\TranslatorEngine\Facades\TranslatorEngine;
-use Ataurbdx\TranslatorEngine\Modules\StaticUI\Models\TranslatorEngineStatic;
+use Ataurbdx\Translator\Facades\Translator;
+use Ataurbdx\Translator\Modules\StaticUI\Models\TranslatorStatic;
 use Illuminate\Console\Command;
 
 class AiSyncCommand extends Command
 {
-    protected $signature = 'translator-engine:ai-sync 
+    protected $signature = 'translator:ai-sync 
                             {--to=bn : Target locale} 
                             {--from=en : Source locale} 
                             {--group= : Translate a specific group only}';
@@ -23,7 +23,7 @@ class AiSyncCommand extends Command
 
         $this->info("Scanning untranslated keys from '{$from}' to '{$to}' using AI...");
 
-        $query = TranslatorEngineStatic::query();
+        $query = TranslatorStatic::query();
         if ($group) {
             $query->where('group', $group);
         }
@@ -38,7 +38,7 @@ class AiSyncCommand extends Command
                 $sourceText = $record->value[$from] ?? $record->name ?? $record->key;
                 $this->line("Translating: <comment>{$record->key}</comment> -> '{$sourceText}'");
 
-                $translated = TranslatorEngine::ai()->translate($sourceText, $to, $from);
+                $translated = Translator::ai()->translate($sourceText, $to, $from);
 
                 if (!empty($translated) && $translated !== $sourceText) {
                     $values = $record->value ?? [];
@@ -46,7 +46,7 @@ class AiSyncCommand extends Command
                     $record->value = $values;
                     $record->save();
 
-                    TranslatorEngine::static()->forget($record->key);
+                    Translator::static()->forget($record->key);
                     $this->info("✔ Saved: '{$translated}'");
                     $count++;
                 }

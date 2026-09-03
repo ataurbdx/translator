@@ -1,14 +1,14 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Console;
+namespace Ataurbdx\Translator\Console;
 
-use Ataurbdx\TranslatorEngine\Modules\CulturalLocale\Models\TranslatorEngineLocale;
+use Ataurbdx\Translator\Modules\CulturalLocale\Models\TranslatorLocale;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class ExportLocalesCommand extends Command
 {
-    protected $signature = 'translator-engine:export-locales
+    protected $signature = 'translator:export-locales
                             {--locale= : Export a specific locale only (e.g. --locale=bn)}
                             {--force   : Overwrite existing exported files}';
 
@@ -25,7 +25,7 @@ class ExportLocalesCommand extends Command
         }
 
         // Build query
-        $query = TranslatorEngineLocale::query();
+        $query = TranslatorLocale::query();
 
         if ($locale = $this->option('locale')) {
             $query->where('code', $locale);
@@ -34,7 +34,7 @@ class ExportLocalesCommand extends Command
         $locales = $query->get();
 
         if ($locales->isEmpty()) {
-            $this->warn('⚠️  No locale records found in database. Have you seeded translator_engine_locales?');
+            $this->warn('⚠️  No locale records found in database. Have you seeded translator_locales?');
             return Command::FAILURE;
         }
 

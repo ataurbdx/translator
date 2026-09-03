@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $tableName = config('translator_engine.tables.settings', 'translator_engine_settings');
+        $tableName = config('translator.tables.settings', 'translator_settings');
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
@@ -25,7 +25,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        $tableName = config('translator_engine.tables.settings', 'translator_engine_settings');
+        $tableName = config('translator.tables.settings', 'translator_settings');
         Schema::dropIfExists($tableName);
     }
 };

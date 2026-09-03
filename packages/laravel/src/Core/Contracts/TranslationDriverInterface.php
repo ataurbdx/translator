@@ -1,6 +1,6 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Core\Contracts;
+namespace Ataurbdx\Translator\Core\Contracts;
 
 interface TranslationDriverInterface
 {

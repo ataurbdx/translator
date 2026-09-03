@@ -1,19 +1,19 @@
 <?php
 
-namespace Ataurbdx\TranslatorEngine\Core;
+namespace Ataurbdx\Translator\Core;
 
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\InlineTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\InternalTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\ExternalTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\DynamicModels\Drivers\HybridTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\StaticUI\Drivers\StaticTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\StaticUI\Drivers\JsonTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\StaticUI\Drivers\FileTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\CulturalLocale\Drivers\LocalTranslationDriver;
-use Ataurbdx\TranslatorEngine\Modules\AutomationAI\Drivers\AiTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\InlineTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\InternalTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\ExternalTranslationDriver;
+use Ataurbdx\Translator\Modules\DynamicModels\Drivers\HybridTranslationDriver;
+use Ataurbdx\Translator\Modules\StaticUI\Drivers\StaticTranslationDriver;
+use Ataurbdx\Translator\Modules\StaticUI\Drivers\JsonTranslationDriver;
+use Ataurbdx\Translator\Modules\StaticUI\Drivers\FileTranslationDriver;
+use Ataurbdx\Translator\Modules\CulturalLocale\Drivers\LocalTranslationDriver;
+use Ataurbdx\Translator\Modules\AutomationAI\Drivers\AiTranslationDriver;
 use Illuminate\Database\Eloquent\Model;
 
-class TranslatorEngine
+class Translator
 {
     protected static ?StaticTranslationDriver $staticDriver = null;
     protected static ?JsonTranslationDriver $jsonDriver = null;
