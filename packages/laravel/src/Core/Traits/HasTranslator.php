@@ -47,6 +47,14 @@ trait HasTranslator
     }
 
     /**
+     * Natural shorthand alias for morph relationship
+     */
+    public function translations()
+    {
+        return $this->translatorDynamics();
+    }
+
+    /**
      * Get translated value for a field
      */
     public function translate(string $field, ?string $locale = null, mixed $default = null): mixed

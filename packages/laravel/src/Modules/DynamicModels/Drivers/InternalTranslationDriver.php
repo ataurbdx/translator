@@ -28,8 +28,11 @@ class InternalTranslationDriver implements TranslationDriverInterface
         $fallback = $default !== null ? $default : ($model->getRawOriginal($field) ?? $model->getAttribute($field));
 
         // 1. Check if translations relation is eager loaded
+        $relation = null;
         if ($model->relationLoaded('translatorDynamics')) {
             $relation = $model->translatorDynamics;
+        } elseif ($model->relationLoaded('translations')) {
+            $relation = $model->translations;
         }
 
         if ($relation) {
