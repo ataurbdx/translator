@@ -18,6 +18,7 @@ TRANSLATOR — CORE COMMANDS
    git push origin main
    git push origin v1.0.1
 
+
 4. INSTALL IN A LARAVEL PROJECT
    composer require ataurbdx/translator
    php artisan translator:install
