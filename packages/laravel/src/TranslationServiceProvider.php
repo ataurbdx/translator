@@ -2,21 +2,21 @@
 
 namespace Ataurbdx\Translator;
 
+use Illuminate\Support\ServiceProvider;
+use Ataurbdx\Translator\Core\Translator;
 use Ataurbdx\Translator\Console\InstallCommand;
 use Ataurbdx\Translator\Console\MakeExternalCommand;
 use Ataurbdx\Translator\Console\MakeHybridCommand;
 use Ataurbdx\Translator\Console\MakeInlineCommand;
 use Ataurbdx\Translator\Console\AiSyncCommand;
 use Ataurbdx\Translator\Console\ExportLocalesCommand;
-use Ataurbdx\Translator\Core\Translator;
 use Ataurbdx\Translator\Modules\HeadlessApi\Middleware\TranslatorLocaleMiddleware;
 use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider;
 
 class TranslationServiceProvider extends ServiceProvider
 {
     /**
-     * Register services in the container
+     * Register package services in the container
      */
     public function register(): void
     {
@@ -44,11 +44,11 @@ class TranslationServiceProvider extends ServiceProvider
             ], 'config');
 
             $this->publishes([
-                __DIR__ . '/Modules/Languages/Migrations/' => database_path('migrations'),
-                __DIR__ . '/Modules/Settings/Migrations/' => database_path('migrations'),
-                __DIR__ . '/Modules/DynamicModels/Migrations/' => database_path('migrations'),
-                __DIR__ . '/Modules/StaticUI/Migrations/' => database_path('migrations'),
-                __DIR__ . '/Modules/CulturalLocale/Migrations/' => database_path('migrations'),
+                __DIR__ . '/Modules/Languages/Migrations/create_translator_languages_table.php.stub' => $this->getMigrationFileName('create_translator_languages_table', 0),
+                __DIR__ . '/Modules/Settings/Migrations/create_translator_settings_table.php.stub' => $this->getMigrationFileName('create_translator_settings_table', 1),
+                __DIR__ . '/Modules/DynamicModels/Migrations/create_translator_dynamics_table.php.stub' => $this->getMigrationFileName('create_translator_dynamics_table', 2),
+                __DIR__ . '/Modules/StaticUI/Migrations/create_translator_statics_table.php.stub' => $this->getMigrationFileName('create_translator_statics_table', 3),
+                __DIR__ . '/Modules/CulturalLocale/Migrations/create_translator_locales_table.php.stub' => $this->getMigrationFileName('create_translator_locales_table', 4),
             ], 'migrations');
 
             // Register artisan commands
@@ -62,22 +62,26 @@ class TranslationServiceProvider extends ServiceProvider
             ]);
         }
 
-        // 2. Load Core Migrations directly
-        $this->loadMigrationsFrom(__DIR__ . '/Modules/Languages/Migrations');
-        $this->loadMigrationsFrom(__DIR__ . '/Modules/Settings/Migrations');
-        $this->loadMigrationsFrom(__DIR__ . '/Modules/DynamicModels/Migrations');
-        $this->loadMigrationsFrom(__DIR__ . '/Modules/StaticUI/Migrations');
-        $this->loadMigrationsFrom(__DIR__ . '/Modules/CulturalLocale/Migrations');
-
-        // 3. Register Headless API Routes if enabled
+        // 2. Register Headless API Routes if enabled
         if (config('translator.api.enabled', true)) {
             $this->loadRoutesFrom(__DIR__ . '/Modules/HeadlessApi/Routes/api.php');
         }
 
-        // 4. Register Global Locale Middleware
+        // 3. Register Global Locale Middleware
         /** @var Router $router */
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', TranslatorLocaleMiddleware::class);
-        $router->pushMiddlewareToGroup('api', TranslatorLocaleMiddleware::class);
+    }
+
+    /**
+     * Generate dynamic migration file name with current timestamp (if not already published)
+     */
+    protected function getMigrationFileName(string $migrationFileName, int $offsetSeconds = 0): string
+    {
+        $timestamp = date('Y_m_d_His', time() + $offsetSeconds);
+
+        $existing = glob(database_path('migrations/*_' . $migrationFileName . '.php'));
+
+        return !empty($existing) ? $existing[0] : database_path("migrations/{$timestamp}_{$migrationFileName}.php");
     }
 }
