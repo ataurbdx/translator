@@ -128,7 +128,7 @@ Follow the [Semantic Versioning (SemVer)](https://semver.org/) format: `vMAJOR.M
 #### Step 1: Stage and commit your changes
 ```bash
 git add .
-git commit -m "feat: simplified translator engine to translator"
+git commit -m "feat: your change description"
 ```
 
 #### Step 2: Push your branch to GitHub
@@ -139,16 +139,16 @@ git push origin main
 #### Step 3: Create a version tag
 ```bash
 # Lightweight tag:
-git tag v1.0.0
+git tag v1.0.4
 
 # Or annotated tag with a descriptive release message (recommended):
-git tag -a v1.0.0 -m "Release v1.0.0: Master universal translator for Laravel, Flutter, and React"
+git tag -a v1.0.4 -m "Release v1.0.4: On-demand installation and real-time migration timestamps"
 ```
 
 #### Step 4: Push the tag to GitHub
 ```bash
 # Push a specific tag:
-git push origin v1.0.0
+git push origin v1.0.4
 
 # Or push all local tags at once:
 git push origin --tags
@@ -156,10 +156,8 @@ git push origin --tags
 
 #### Step 5: Automatic indexing
 * Because your GitHub Webhook is active, Packagist receives the tag event immediately.
-* Within **10–30 seconds**, `v1.0.0` is published and available worldwide on Packagist!
+* Within **10–30 seconds**, `v1.0.4` is published and available worldwide on Packagist!
 * You can check the live release at [https://packagist.org/packages/ataurbdx/translator](https://packagist.org/packages/ataurbdx/translator).
-
-> **Manual Update Fallback**: If GitHub's webhook ever experiences delays, you can always visit your Packagist page and click the green **"Update"** button to force an instant refresh.
 
 ---
 
@@ -173,18 +171,31 @@ composer require ataurbdx/translator
 ```
 Laravel's package auto-discovery will automatically register `Ataurbdx\Translator\TranslationServiceProvider` and the `Translator` facade.
 
-### Step 2: Run the Installer
+### Step 2: Run the Installer (Modular & On-Demand)
+
+Choose the setup that fits your application best:
+
 ```bash
+# 1. Interactive prompt (choose which tables to install):
 php artisan translator:install
+
+# 2. Full Suite (installs all 5 tables without prompts):
+php artisan translator:install --all
+
+# 3. Minimal Core (Languages + Settings only — for Inline, File, JSON or AI):
+php artisan translator:install --type=core
+
+# 4. Specific Feature Tables:
+php artisan translator:install --type=internal   # Core + translator_dynamics (Eloquent models)
+php artisan translator:install --type=static     # Core + translator_statics (UI buttons & menus)
+php artisan translator:install --type=local      # Core + translator_locales (Bengali digits & calendar)
+php artisan translator:install --type=static,local # Multi-select
 ```
-This single command:
+
+What it does:
 1. Publishes configuration to `config/translator.php`.
-2. Publishes and executes all core migrations:
-   - `translator_languages` (active languages, flags, defaults)
-   - `translator_settings` (AI keys, API settings, cache rules)
-   - `translator_dynamics` (polymorphic database translations)
-   - `translator_statics` (database UI labels, buttons, menus)
-   - `translator_locales` (cultural formatting rules: digits, calendar, money-to-words)
+2. Publishes ONLY your selected migrations with current real-time timestamps.
+3. Prompts to run `php artisan migrate`.
 
 ### Step 3: Start Translating in Code
 
@@ -221,7 +232,7 @@ echo $category->name; // Auto-resolves based on active app locale!
 
 ## 5. Upgrading the Package
 
-When you release a new version tag (e.g. `v1.0.1`), users upgrade by running:
+When you release a new version tag (e.g. `v1.0.4`), users upgrade by running:
 
 ```bash
 composer update ataurbdx/translator
@@ -235,14 +246,10 @@ php artisan migrate
 If a user ever wants to remove the package:
 
 ```bash
-# 1. Rollback migrations (optional)
-php artisan migrate:rollback --path=vendor/ataurbdx/translator/packages/laravel/src/Modules/StaticUI/Migrations
-php artisan migrate:rollback --path=vendor/ataurbdx/translator/packages/laravel/src/Modules/CulturalLocale/Migrations
-
-# 2. Remove package
+# 1. Remove package
 composer remove ataurbdx/translator
 
-# 3. Delete published config
+# 2. Delete published config
 del config\translator.php
 ```
 
@@ -252,31 +259,33 @@ del config\translator.php
 
 ```bash
 # ──────────────────────────────────────────────
-# 1. COMMIT CHANGES
+# 1. COMMIT & PUSH CHANGES
 # ──────────────────────────────────────────────
 git add .
 git commit -m "feat: your descriptive update"
-
-# ──────────────────────────────────────────────
-# 2. PUSH CODE TO GITHUB
-# ──────────────────────────────────────────────
 git push origin main
 
 # ──────────────────────────────────────────────
-# 3. TAG A NEW RELEASE
+# 2. TAG A NEW RELEASE
 # ──────────────────────────────────────────────
-git tag v1.0.0
-git push origin v1.0.0
-# (Packagist auto-updates in 15 seconds via webhook!)
+git tag v1.0.4
+git push origin v1.0.4
 
 # ──────────────────────────────────────────────
-# 4. INSTALL IN ANY LARAVEL PROJECT
+# 3. INSTALL ON-DEMAND IN ANY LARAVEL PROJECT
 # ──────────────────────────────────────────────
 composer require ataurbdx/translator
+
+# Interactive:
 php artisan translator:install
 
+# Or Specific:
+php artisan translator:install --type=core
+php artisan translator:install --type=static
+php artisan translator:install --all
+
 # ──────────────────────────────────────────────
-# 5. CLEAR & REBUILD CONFIG CACHE
+# 4. CLEAR & REBUILD CONFIG CACHE
 # ──────────────────────────────────────────────
 php artisan config:clear
 php artisan config:cache

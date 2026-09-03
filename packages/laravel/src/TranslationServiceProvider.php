@@ -43,6 +43,29 @@ class TranslationServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/translator.php' => config_path('translator.php'),
             ], 'config');
 
+            // Granular tags for on-demand installation:
+            // Core: Languages + Settings
+            $this->publishes([
+                __DIR__ . '/Modules/Languages/Migrations/create_translator_languages_table.php.stub' => $this->getMigrationFileName('create_translator_languages_table', 0),
+                __DIR__ . '/Modules/Settings/Migrations/create_translator_settings_table.php.stub' => $this->getMigrationFileName('create_translator_settings_table', 1),
+            ], 'migrations-core');
+
+            // Type 2: Internal Polymorphic Dynamic Models
+            $this->publishes([
+                __DIR__ . '/Modules/DynamicModels/Migrations/create_translator_dynamics_table.php.stub' => $this->getMigrationFileName('create_translator_dynamics_table', 2),
+            ], 'migrations-internal');
+
+            // Type 5: Static UI Strings
+            $this->publishes([
+                __DIR__ . '/Modules/StaticUI/Migrations/create_translator_statics_table.php.stub' => $this->getMigrationFileName('create_translator_statics_table', 3),
+            ], 'migrations-static');
+
+            // Type 8: Cultural Locale Rules
+            $this->publishes([
+                __DIR__ . '/Modules/CulturalLocale/Migrations/create_translator_locales_table.php.stub' => $this->getMigrationFileName('create_translator_locales_table', 4),
+            ], 'migrations-local');
+
+            // All migrations combined
             $this->publishes([
                 __DIR__ . '/Modules/Languages/Migrations/create_translator_languages_table.php.stub' => $this->getMigrationFileName('create_translator_languages_table', 0),
                 __DIR__ . '/Modules/Settings/Migrations/create_translator_settings_table.php.stub' => $this->getMigrationFileName('create_translator_settings_table', 1),

@@ -1,67 +1,111 @@
-TRANSLATOR — CORE COMMANDS
-===================================
+TRANSLATOR — CORE COMMANDS REFERENCE
+========================================================================
 
-0. DOWNLOAD & INSTALL THE PACKAGE (run in your Laravel project)
+0. DOWNLOAD & INSTALL THE PACKAGE
    composer require ataurbdx/translator
 
-1. SETUP (run once after composer require)
-   php artisan translator:install
+------------------------------------------------------------------------
+1. SETUP & INSTALLATION (ON-DEMAND & MODULAR)
+------------------------------------------------------------------------
 
-2. VERIFY INSTALLATION
-   composer show ataurbdx/translator
-   php artisan migrate:status
+   A. INTERACTIVE INSTALLER (Prompts you to choose features):
+      php artisan translator:install
 
-3. PUBLISH NEW VERSION TO GITHUB
-   git add .
-   git commit -m "your message"
-   git tag v1.0.1
-   git push origin main
-   git push origin v1.0.1
+   B. FULL SUITE INSTALLATION (Installs all 5 tables without prompts):
+      php artisan translator:install --all
+      OR:
+      php artisan translator:install --type=all
 
+   C. MINIMAL CORE INSTALLATION (Languages & Settings only):
+      php artisan translator:install --type=core
+      • Installs: translator_languages, translator_settings
+      • Best for: Projects using Type 1 (Inline JSON), File, JSON, or pure AI. Zero extra database bloat!
 
-4. INSTALL IN A LARAVEL PROJECT
-   composer require ataurbdx/translator
-   php artisan translator:install
+   D. TYPE 2: INTERNAL DYNAMIC MODELS ONLY:
+      php artisan translator:install --type=internal
+      • Installs: translator_languages, translator_settings, translator_dynamics
+      • Best for: Polymorphic translations on small/medium Eloquent models.
 
-5. UPGRADE PACKAGE
-   composer update ataurbdx/translator
-   php artisan migrate
+   E. TYPE 5: STATIC UI STRINGS ONLY:
+      php artisan translator:install --type=static
+      • Installs: translator_languages, translator_settings, translator_statics
+      • Best for: Translating web UI, buttons, navbar, forms, and headers via DB.
 
-6. PUBLISH CONFIG ONLY
-   php artisan vendor:publish --provider="Ataurbdx\Translator\TranslationServiceProvider" --tag="config"
+   F. TYPE 8: CULTURAL LOCALES & NUMBERS ONLY:
+      php artisan translator:install --type=local
+      • Installs: translator_languages, translator_settings, translator_locales
+      • Best for: Bengali numerals (২০২৬), South Asian Lakh/Crore formatting, dates, number-to-words.
 
-7. GENERATE EXTERNAL TABLE (for high-traffic model)
-   php artisan translator:make:external listings
-   php artisan migrate
+   G. COMBINED CUSTOM SELECTION (Multi-type):
+      php artisan translator:install --type=static,local
 
-8. GENERATE HYBRID TABLE (for domain cluster)
-   php artisan translator:make:hybrid worlds
-   php artisan migrate
+------------------------------------------------------------------------
+2. ON-DEMAND TABLE GENERATORS (FOR HIGH-VOLUME / LARGE PROJECTS)
+------------------------------------------------------------------------
 
-9. EXPORT LOCALE RULES TO FILE (fallback for local type)
-   php artisan translator:export-locales
-   php artisan translator:export-locales --locale=bn
-   php artisan translator:export-locales --force
+   A. TYPE 3: GENERATE DEDICATED EXTERNAL TABLE (for high-traffic model):
+      php artisan translator:make:external listings
+      • Creates: database/migrations/..._create_translator_listings_table.php
+      php artisan migrate
 
-10. AI AUTO-TRANSLATE MISSING KEYS
-    php artisan translator:ai-sync --from=en --to=bn
+   B. TYPE 4: GENERATE GROUPED HYBRID TABLE (for domain clusters):
+      php artisan translator:make:hybrid worlds
+      • Creates: database/migrations/..._create_translator_worlds_table.php
+      • Shared across: Country, State, City, SubCity in 1 table!
+      php artisan migrate
 
-11. UNINSTALL
-    composer remove ataurbdx/translator
+   C. TYPE 1: CONVERT COLUMN TO INLINE JSON:
+      php artisan translator:make:inline products description
+      php artisan migrate
 
-12. CLEAR & REBUILD CONFIG CACHE
-    php artisan config:clear
-    php artisan config:cache
+------------------------------------------------------------------------
+3. UTILITY & AI COMMANDS
+------------------------------------------------------------------------
 
-===================================
-TABLES CREATED ON INSTALL:
-  translator_languages
-  translator_settings
-  translator_dynamics
-  translator_statics
-  translator_locales
+   A. EXPORT LOCALE RULES TO JSON FILE (3-Tier Fallback: DB -> File -> Code):
+      php artisan translator:export-locales
+      php artisan translator:export-locales --locale=bn
+      php artisan translator:export-locales --force
 
-ON DEMAND (generated per project):
-  translator_{model}   (external type)
-  translator_{domain}  (hybrid type)
-===================================
+   B. AI AUTO-TRANSLATE MISSING KEYS (Google Gemini / OpenAI / DeepL):
+      php artisan translator:ai-sync --from=en --to=bn
+      php artisan translator:ai-sync --from=en --to=bn --group=button
+
+   C. VERIFY INSTALLATION & TABLES STATUS:
+      composer show ataurbdx/translator
+      php artisan migrate:status
+
+   D. RE-PUBLISH CONFIG FILE ONLY:
+      php artisan vendor:publish --provider="Ataurbdx\Translator\TranslationServiceProvider" --tag="config"
+
+   E. CLEAR & REBUILD CONFIG CACHE:
+      php artisan config:clear
+      php artisan config:cache
+
+------------------------------------------------------------------------
+4. UPGRADE & UNINSTALL
+------------------------------------------------------------------------
+
+   UPGRADE:
+      composer update ataurbdx/translator
+      php artisan migrate
+
+   UNINSTALL:
+      composer remove ataurbdx/translator
+
+========================================================================
+TABLES SUMMARY
+========================================================================
+Core Tables (Always available on demand):
+  • translator_languages  (Supported languages, flags, defaults)
+  • translator_settings   (AI API keys, cache rules, headless API settings)
+
+Feature Tables (Install on demand when needed):
+  • translator_dynamics   (Type 2: Polymorphic dynamic model translations)
+  • translator_statics    (Type 5: Database UI strings, buttons, menus)
+  • translator_locales    (Type 8: Cultural rules, digits, calendar, money-to-words)
+
+Dedicated Scaling Tables (Generated on demand):
+  • translator_{model}    (Type 3: Dedicated external table per high-volume model)
+  • translator_{domain}   (Type 4: Hybrid domain cluster table)
+========================================================================

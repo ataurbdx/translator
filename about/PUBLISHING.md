@@ -173,18 +173,31 @@ composer require ataurbdx/translator
 ```
 Laravel's package auto-discovery will automatically register `Ataurbdx\Translator\TranslationServiceProvider` and the `Translator` facade.
 
-### Step 2: Run the Installer
+### Step 2: Run the Installer (Modular & On-Demand)
+
+Choose the setup that fits your application best:
+
 ```bash
+# 1. Interactive prompt (choose which tables to install):
 php artisan translator:install
+
+# 2. Full Suite (installs all 5 tables without prompts):
+php artisan translator:install --all
+
+# 3. Minimal Core (Languages + Settings only — for Inline, File, JSON or AI):
+php artisan translator:install --type=core
+
+# 4. Specific Feature Tables:
+php artisan translator:install --type=internal   # Core + translator_dynamics (Eloquent models)
+php artisan translator:install --type=static     # Core + translator_statics (UI buttons & menus)
+php artisan translator:install --type=local      # Core + translator_locales (Bengali digits & calendar)
+php artisan translator:install --type=static,local # Multi-select
 ```
-This single command:
+
+What it does:
 1. Publishes configuration to `config/translator.php`.
-2. Publishes and executes all core migrations:
-   - `translator_languages` (active languages, flags, defaults)
-   - `translator_settings` (AI keys, API settings, cache rules)
-   - `translator_dynamics` (polymorphic database translations)
-   - `translator_statics` (database UI labels, buttons, menus)
-   - `translator_locales` (cultural formatting rules: digits, calendar, money-to-words)
+2. Publishes ONLY your selected migrations with current real-time timestamps.
+3. Prompts to run `php artisan migrate`.
 
 ### Step 3: Start Translating in Code
 
